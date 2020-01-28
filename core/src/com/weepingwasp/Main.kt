@@ -2,100 +2,75 @@ package com.weepingwasp
 
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Pixmap
-import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.g2d.Sprite
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.freetype.*
+import com.badlogic.gdx.scenes.scene2d.*
+import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.utils.viewport.ScreenViewport
+import com.weepingwasp.models.Storage
+import com.weepingwasp.models.Card
 
-class Main: ApplicationAdapter() {
-	var batch: SpriteBatch? = null
+class Main : ApplicationAdapter() {
+    var boardImg: Texture? = null
+    var boardSprite: Image? = null
 
-	var boardImg: Texture? = null
-	var boardSprite: Sprite? = null
+    val storage = Storage()
 
-	var camera: OrthographicCamera? = null
+    fun createBoardPixmap(): Pixmap {
+        val pixmap = Pixmap(width, height, Pixmap.Format.RGBA8888)
 
-	var cardImg: Texture? = null
+        pixmap.setColor(Color.BROWN)
+        pixmap.fill()
 
-	val storage = Storage()
+        pixmap.setColor(Color.GREEN)
+        pixmap.fillCircle(width / 4 * 1, height / 2 + height / 10, height / 16)
+        pixmap.fillCircle(width / 4 * 2, height / 2 + height / 10, height / 16)
+        pixmap.fillCircle(width / 4 * 3, height / 2 + height / 10, height / 16)
 
-	val inputProcessor = InputProcessor(storage)
+        pixmap.setColor(Color.BLACK)
+        pixmap.drawLine(0, height / 2, width, height / 2)
 
-	fun createBoardPixmap(): Pixmap {
-		val pixmap = Pixmap(width, height, Pixmap.Format.RGBA8888)
+        pixmap.setColor(Color.RED)
+        pixmap.fillCircle(width / 4 * 1, height / 2 - height / 10, height / 16)
+        pixmap.fillCircle(width / 4 * 2, height / 2 - height / 10, height / 16)
+        pixmap.fillCircle(width / 4 * 3, height / 2 - height / 10, height / 16)
 
-		pixmap.setColor(Color.BROWN)
-		pixmap.fill()
+        return pixmap
+    }
 
-		pixmap.setColor(Color.GREEN)
-		pixmap.fillCircle(width/4 * 1, height / 2 + height/10, height/16)
-		pixmap.fillCircle(width/4 * 2, height / 2 + height/10, height/16)
-		pixmap.fillCircle(width/4 * 3, height / 2 + height/10, height/16)
+    override
+    fun create() {
+        val boardPixmap = createBoardPixmap()
+        boardImg = Texture(boardPixmap)
+        boardPixmap.dispose()
+        boardSprite = Image(boardImg)
+        boardSprite!!.setSize(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+        // inputProcessor.camera = camera
+        val inputMultiplexer = InputMultiplexer()
 
-		pixmap.setColor(Color.BLACK)
-		pixmap.drawLine(0, height/2, width, height/2)
+        storage.stage = Stage(ScreenViewport())
+        storage.stage!!.addActor(boardSprite)
+        storage.addCard(Card(), false)
+        storage.addCard(Card(), false)
 
-		pixmap.setColor(Color.RED)
-		pixmap.fillCircle(width/4 * 1, height / 2 - height/10, height/16)
-		pixmap.fillCircle(width/4 * 2, height / 2 - height/10, height/16)
-		pixmap.fillCircle(width/4 * 3, height / 2 - height/10, height/16)
+        inputMultiplexer.addProcessor(storage.stage!!)
+        Gdx.input.inputProcessor = inputMultiplexer
+    }
 
-		return pixmap
-	}
+    override
+    fun render() {
+        Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+        storage.stage!!.act()
+        storage.stage!!.draw()
+    }
 
-	override
-	fun create() {
-		camera = OrthographicCamera();
-		camera?.setToOrtho(false, width.toFloat(), height.toFloat());
-
-		batch = SpriteBatch()
-		
-		val boardPixmap = createBoardPixmap()
-		boardImg = Texture(boardPixmap)
-		boardPixmap.dispose()
-		boardSprite = Sprite(boardImg)
-
-		val cardPixmap = Pixmap(cardWidth, cardHeight, Pixmap.Format.RGBA8888)
-		cardPixmap.setColor(Color.TAN)
-		cardPixmap.fill()
-		cardPixmap.setColor(Color.BLACK)
-		cardPixmap.drawRectangle(0, 0, cardWidth, cardHeight)
-
-		cardImg = Texture(cardPixmap)
-		cardPixmap.dispose()
-
-		storage.player.addCard(Card())
-		storage.player.addCard(Card())
-		inputProcessor.camera = camera
-		Gdx.input.inputProcessor = inputProcessor
-	}
-
-	override
-	fun render() {
-		Gdx.gl.glClearColor(1f, 1f, 1f, 1f)
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-		batch?.setProjectionMatrix(camera?.combined);
-
-		batch?.begin()
-		boardSprite?.draw(batch)
-		var index = 0
-		for (card in storage.player.cards) {
-			if (card.sprite == null) {			
-				card.sprite = Sprite(cardImg)
-				card.sprite?.translateX(cardWidth * 1.1f * index)
-			}
-			card.sprite?.draw(batch)
-			index ++	
-		}
-		batch?.end()
-	}
-	
-	override
-	fun dispose () {
-		batch?.dispose()
-		boardImg?.dispose()
-	}
+    override
+    fun dispose() {
+        boardImg?.dispose()
+    }
 }

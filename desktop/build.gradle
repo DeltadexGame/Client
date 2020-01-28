@@ -1,11 +1,15 @@
 apply plugin: "kotlin"
 
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
 sourceSets.main.java.srcDirs = [ "src/" ]
 sourceSets.main.resources.srcDirs = ["../core/assets"]
 
 project.ext.mainClassName = "com.weepingwasp.desktop.DesktopLauncherKt"
 project.ext.assetsDir = new File("../core/assets")
+
+dependencies{
+    compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+}
 
 task run(dependsOn: classes, type: JavaExec) {
     main = project.mainClassName
