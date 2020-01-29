@@ -17,6 +17,8 @@ import com.weepingwasp.network_manager.Packet
 import com.google.gson.internal.*
 
 class Main : ApplicationAdapter() {
+    val connectToServer = false
+
     var boardImg: Texture? = null
     var boardSprite: Image? = null
 
@@ -80,8 +82,10 @@ class Main : ApplicationAdapter() {
         inputMultiplexer.addProcessor(storage.stage!!)
         Gdx.input.inputProcessor = inputMultiplexer
 
-        var networkManager = NetworkManager("127.0.0.1", 8080, ::packetReceived)
-        networkManager.sendPacket(Packet(0, hashMapOf("username" to "oisin", "token" to "abcdefg")))
+        if(connectToServer) {
+            var networkManager = NetworkManager("127.0.0.1", 8080, ::packetReceived)
+            networkManager.sendPacket(Packet(0, hashMapOf("username" to "oisin", "token" to "abcdefg")))
+        }
     }
 
     override
