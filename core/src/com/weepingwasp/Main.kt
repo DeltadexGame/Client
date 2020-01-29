@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.freetype.*
 import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.weepingwasp.models.Storage
 import com.weepingwasp.models.Card
 
@@ -49,16 +48,20 @@ class Main : ApplicationAdapter() {
         boardPixmap.dispose()
         boardSprite = Image(boardImg)
         boardSprite!!.setSize(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
-        // inputProcessor.camera = camera
         val inputMultiplexer = InputMultiplexer()
 
-        storage.stage = Stage(ScreenViewport())
+        storage.stage = Stage()
         storage.stage!!.addActor(boardSprite)
         storage.addCard(Card(), false)
         storage.addCard(Card(), false)
 
         inputMultiplexer.addProcessor(storage.stage!!)
         Gdx.input.inputProcessor = inputMultiplexer
+    }
+
+    override
+    fun resize(width: Int, height: Int) {
+        storage.stage!!.getViewport().update(width, height, true);
     }
 
     override

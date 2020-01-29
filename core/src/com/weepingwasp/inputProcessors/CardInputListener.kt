@@ -1,9 +1,10 @@
-package com.weepingwasp.inputProcessors
+package com.weepingwasp.input_processors
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
+import com.badlogic.gdx.Input
 import com.weepingwasp.models.Card
 
 class CardInputListener : InputListener() {
@@ -14,31 +15,38 @@ class CardInputListener : InputListener() {
     var enlargedCard: Card? = null
     override
     fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-        val stage = event.listenerActor.stage
-        stage.actors.removeValue(enlargedCard!!, false)
-        touchPos.set(x, y)
-        touchPos.set(event.listenerActor.localToStageCoordinates(touchPos))
-        cardOriginalPos.set(event.listenerActor.getX(), event.listenerActor.getY())
-        event.listenerActor.scaleBy(0.1f)
-        originalZIndex = event.listenerActor.zIndex
-        event.listenerActor.zIndex = 1000
+        if(button == Input.Buttons.LEFT) {
+            val stage = event.listenerActor.stage
+            stage.actors.removeValue(enlargedCard, false)
+            touchPos.set(x, y)
+            touchPos.set(event.listenerActor.localToStageCoordinates(touchPos))
+            cardOriginalPos.set(event.listenerActor.getX(), event.listenerActor.getY())
+            event.listenerActor.scaleBy(0.1f)
+            originalZIndex = event.listenerActor.zIndex
+            event.listenerActor.zIndex = 1000
+        }
         return true
     }
 
     override
     fun touchUp(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int) {
-        if (true) {
-            // TODO add placing
+        if(button == Input.Buttons.LEFT) {
+            val stage = event.listenerActor.stage
+            tempPos.set(x, y)
+            tempPos.set(event.listenerActor.localToStageCoordinates(tempPos))
+            // if (tempPos.y in stage.height) {
+
+            // }
+            event.listenerActor.setPosition(cardOriginalPos.x, cardOriginalPos.y)
+            event.listenerActor.scaleBy(-0.1f)
+            event.listenerActor.zIndex = originalZIndex
         }
-        event.listenerActor.setPosition(cardOriginalPos.x, cardOriginalPos.y)
-        event.listenerActor.scaleBy(-0.1f)
-        event.listenerActor.zIndex = originalZIndex
     }
 
     override
     fun touchDragged(event: InputEvent, x: Float, y: Float, pointer: Int) {
         val stage = event.listenerActor.stage
-        stage.actors.removeValue(enlargedCard!!, false)
+        stage.actors.removeValue(enlargedCard, false)
         tempPos.set(x, y)
         tempPos.set(event.listenerActor.localToStageCoordinates(tempPos))
         event.listenerActor.setPosition(cardOriginalPos.x + tempPos.x - touchPos.x, cardOriginalPos.y + tempPos.y - touchPos.y)
