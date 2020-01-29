@@ -72,9 +72,10 @@ class CardInputListener : InputListener() {
     override
     fun enter(event: InputEvent, x: Float, y: Float, pointer: Int, fromActor: Actor?) {
         enlargedCard = (event.listenerActor as Card).clone()
+        enlargedCard!!.initGraphics()
         enlargedCard!!.scaleBy(1f)
         val stage = event.listenerActor.stage
-        enlargedCard!!.setPosition(stage.width / 2 - enlargedCard!!.image.width * enlargedCard!!.scaleX / 2, stage.height / 2 - enlargedCard!!.image.height * enlargedCard!!.scaleY / 2)
+        enlargedCard!!.setPosition(stage.width / 2 - enlargedCard!!.image!!.width * enlargedCard!!.scaleX / 2, stage.height / 2 - enlargedCard!!.image!!.height * enlargedCard!!.scaleY / 2)
         stage.addActor(enlargedCard)
     }
 

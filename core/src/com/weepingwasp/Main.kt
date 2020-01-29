@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.weepingwasp.models.Storage
 import com.weepingwasp.models.Card
+import com.weepingwasp.graphics.Graphics
 import com.weepingwasp.network_manager.NetworkManager
 import com.weepingwasp.network_manager.Packet
 import com.google.gson.internal.*
@@ -25,6 +26,8 @@ class Main : ApplicationAdapter() {
     val storage = Storage()
 
     val newCard: ArrayList<ArrayList<String>> = arrayListOf()
+
+    var graphics: Graphics? = null
 
     fun createBoardPixmap(): Pixmap {
         val pixmap = Pixmap(width, height, Pixmap.Format.RGBA8888)
@@ -86,6 +89,8 @@ class Main : ApplicationAdapter() {
             var networkManager = NetworkManager("127.0.0.1", 8080, ::packetReceived)
             networkManager.sendPacket(Packet(0, hashMapOf("username" to "oisin", "token" to "abcdefg")))
         }
+
+        graphics = Graphics(storage)
     }
 
     override
@@ -103,10 +108,7 @@ class Main : ApplicationAdapter() {
             }
             newCard.clear()
         }
-        Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-        storage.stage!!.act()
-        storage.stage!!.draw()
+        graphics!!.render()
     }
 
     override
