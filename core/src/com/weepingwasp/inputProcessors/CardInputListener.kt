@@ -13,6 +13,7 @@ class CardInputListener : InputListener() {
     val tempPos = Vector2()
     var originalZIndex = 0
     var enlargedCard: Card? = null
+    var draggingCard = false
     override
     fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
         if(button == Input.Buttons.LEFT) {
@@ -34,12 +35,28 @@ class CardInputListener : InputListener() {
             val stage = event.listenerActor.stage
             tempPos.set(x, y)
             tempPos.set(event.listenerActor.localToStageCoordinates(tempPos))
-            // if (tempPos.y in stage.height) {
-
-            // }
-            event.listenerActor.setPosition(cardOriginalPos.x, cardOriginalPos.y)
-            event.listenerActor.scaleBy(-0.1f)
-            event.listenerActor.zIndex = originalZIndex
+            var placed = false
+            if (tempPos.y in stage.height / 4 .. stage.height/2) {
+                placed = true
+                when(tempPos.x) {
+                    in stage.width/8 .. stage.width/8*3 -> {
+                        println("Left")
+                    }
+                    in stage.width/8*3 .. stage.width/8*5 -> {
+                        println("Middle")
+                    }
+                    in stage.width/8*5 .. stage.width/8*7 -> {
+                        println("Right")
+                    }
+                    else -> {placed = false}
+                }
+            }
+            if(!placed) {
+                event.listenerActor.setPosition(cardOriginalPos.x, cardOriginalPos.y)
+                event.listenerActor.scaleBy(-0.1f)
+                event.listenerActor.zIndex = originalZIndex
+            }
+            
         }
     }
 
