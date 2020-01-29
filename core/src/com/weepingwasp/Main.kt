@@ -12,12 +12,17 @@ import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.weepingwasp.models.Storage
 import com.weepingwasp.models.Card
+import com.weepingwasp.network_manager.NetworkManager
+import com.weepingwasp.network_manager.Packet
+import com.google.gson.internal.*
 
 class Main : ApplicationAdapter() {
     var boardImg: Texture? = null
     var boardSprite: Image? = null
 
     val storage = Storage()
+
+    val newCard: ArrayList<ArrayList<String>> = arrayListOf()
 
     fun createBoardPixmap(): Pixmap {
         val pixmap = Pixmap(width, height, Pixmap.Format.RGBA8888)
@@ -41,6 +46,23 @@ class Main : ApplicationAdapter() {
         return pixmap
     }
 
+    fun packetReceived(packet: Packet): Unit {
+        when(packet.PacketID) {
+            3 -> {
+                var content = (packet.Content as LinkedTreeMap<*, *>).get("hand") as List<LinkedTreeMap<*, *>>
+                for(card in content) {
+                    var ability = (card.get("Ability") as LinkedTreeMap<*, *>).get("Description") as String
+                    var name = (card.get("Ability") as LinkedTreeMap<*, *>).get("Name") as String
+
+                    newCard.add(arrayListOf(name, ability))
+                }
+            } 
+            else -> {
+                println(packet)
+            }
+        }
+    }
+
     override
     fun create() {
         val boardPixmap = createBoardPixmap()
@@ -52,11 +74,14 @@ class Main : ApplicationAdapter() {
 
         storage.stage = Stage()
         storage.stage!!.addActor(boardSprite)
-        storage.addCard(Card(), false)
-        storage.addCard(Card(), false)
+        // storage.addCard(Card(), false)
+        // storage.addCard(Card(), false)
 
         inputMultiplexer.addProcessor(storage.stage!!)
         Gdx.input.inputProcessor = inputMultiplexer
+
+        var networkManager = NetworkManager("127.0.0.1", 8080, ::packetReceived)
+        networkManager.sendPacket(Packet(0, hashMapOf("username" to "oisin", "token" to "abcdefg")))
     }
 
     override
@@ -66,6 +91,14 @@ class Main : ApplicationAdapter() {
 
     override
     fun render() {
+        if(newCard.size != 0) {
+            for(card in newCard) {
+                var cad = Card()
+                cad.text = "Ability: " + card[0] + "\n" + card[1]
+                storage.addCard(cad, false)
+            }
+            newCard.clear()
+        }
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         storage.stage!!.act()
