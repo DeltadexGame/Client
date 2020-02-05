@@ -7,6 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.Input
 import com.weepingwasp.models.Card
 
+import com.weepingwasp.event_manager.*
+
 class CardInputListener : InputListener() {
     val touchPos = Vector2()
     val cardOriginalPos = Vector2()
@@ -40,13 +42,25 @@ class CardInputListener : InputListener() {
                 placed = true
                 when(tempPos.x) {
                     in stage.width/8 .. stage.width/8*3 -> {
-                        println("Left")
+                        val event = Event(EventType.PLAYCARD, hashMapOf(
+                            "place" to "left",
+                            "from" to "x"
+                        ))
+                        pushEvent(event)
                     }
                     in stage.width/8*3 .. stage.width/8*5 -> {
-                        println("Middle")
+                        val event = Event(EventType.PLAYCARD, hashMapOf(
+                            "place" to "left",
+                            "from" to "x"
+                        ))
+                        pushEvent(event)
                     }
                     in stage.width/8*5 .. stage.width/8*7 -> {
-                        println("Right")
+                        val event = Event(EventType.PLAYCARD, hashMapOf(
+                            "place" to "left",
+                            "from" to "x"
+                        ))
+                        pushEvent(event)
                     }
                     else -> {placed = false}
                 }

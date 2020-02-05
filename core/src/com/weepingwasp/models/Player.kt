@@ -1,8 +1,14 @@
 package com.weepingwasp.models
 
-class Player(val self: Boolean) {
+import com.weepingwasp.event_manager.*
+
+class Player(val self: Boolean): EventHandler {
     val cards = arrayListOf<Card>()
     var numCards = 0
+
+    init{
+        registerHandler(this, EventType.PLAYCARD)
+    }
 
     fun addCard(card: Card) {
         cards.add(card)
@@ -15,4 +21,8 @@ class Player(val self: Boolean) {
         numCards--
     }
 
+    override
+    fun handle(event: Event) {
+        println("card Played")
+    }
 }
