@@ -1,6 +1,6 @@
-package com.weepingwasp.models
+package com.deltadex.models
 
-import com.weepingwasp.event_manager.*
+import com.deltadex.event_manager.*
 
 class Player(val self: Boolean) {
     val cards = arrayListOf<Card>()

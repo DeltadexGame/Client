@@ -1,4 +1,4 @@
-package com.weepingwasp.models
+package com.deltadex.models
 
 import com.badlogic.gdx.scenes.scene2d.*
 

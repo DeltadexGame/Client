@@ -1,4 +1,4 @@
-package com.weepingwasp.models
+package com.deltadex.models
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
-import com.weepingwasp.input_processors.CardInputListener
+import com.deltadex.input_processors.CardInputListener
 import com.badlogic.gdx.graphics.g2d.Batch
 
 class Card() : Group() {
@@ -86,6 +86,7 @@ class Card() : Group() {
         healthLabel = Label("0", Label.LabelStyle(getBigFont(), Color.WHITE))
         costLabel = Label("0", Label.LabelStyle(getBigFont(), Color.WHITE))
         image = Image(Texture("card.png"))
+        picture = Image(Texture(pictureLocation))
 
         label!!.setBounds(42f, 122f, 279f, 117f)
         label!!.setAlignment(Align.topLeft, Align.left)

@@ -1,8 +1,8 @@
-package com.weepingwasp.graphics
+package com.deltadex.graphics
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
-import com.weepingwasp.models.Storage
+import com.deltadex.models.Storage
 
 class Graphics(val storage: Storage) {
     fun render() {

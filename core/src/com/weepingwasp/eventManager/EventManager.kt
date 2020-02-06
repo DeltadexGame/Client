@@ -1,4 +1,4 @@
-package com.weepingwasp.event_manager
+package com.deltadex.event_manager
 
 private val eventHandlers = hashMapOf<EventType, ArrayList<(Event)->Unit>>()
 

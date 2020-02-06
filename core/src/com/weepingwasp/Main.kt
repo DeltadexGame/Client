@@ -1,4 +1,4 @@
-package com.weepingwasp
+package com.deltadex
 
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
@@ -10,11 +10,11 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.freetype.*
 import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.weepingwasp.models.Storage
-import com.weepingwasp.models.Card
-import com.weepingwasp.graphics.Graphics
-import com.weepingwasp.network_manager.NetworkManager
-import com.weepingwasp.network_manager.Packet
+import com.deltadex.models.Storage
+import com.deltadex.models.Card
+import com.deltadex.graphics.Graphics
+import com.deltadex.network_manager.NetworkManager
+import com.deltadex.network_manager.Packet
 import com.google.gson.internal.*
 
 class Main : ApplicationAdapter() {

@@ -1,13 +1,13 @@
-package com.weepingwasp.input_processors
+package com.deltadex.input_processors
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.Input
-import com.weepingwasp.models.Card
+import com.deltadex.models.Card
 
-import com.weepingwasp.event_manager.*
+import com.deltadex.event_manager.*
 
 class CardInputListener : InputListener() {
     val touchPos = Vector2()
@@ -42,6 +42,7 @@ class CardInputListener : InputListener() {
                 placed = true
                 when(tempPos.x) {
                     in stage.width/8 .. stage.width/8*3 -> {
+                        
                         val placeEvent = Event(EventType.PLAYCARD, hashMapOf(
                             "place" to "left",
                             "from" to "x"

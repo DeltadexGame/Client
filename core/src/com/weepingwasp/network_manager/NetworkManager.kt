@@ -1,4 +1,4 @@
-package com.weepingwasp.network_manager
+package com.deltadex.network_manager
 
 import java.net.*
 import java.io.*

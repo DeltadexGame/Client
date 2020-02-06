@@ -1,4 +1,4 @@
-package com.weepingwasp
+package com.deltadex
 
 const val width = 1920
 const val height = 1080
