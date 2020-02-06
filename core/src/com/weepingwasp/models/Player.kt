@@ -24,7 +24,7 @@ class Player(val self: Boolean, val storage: Storage) {
     }
 
     fun handle(event: Event) {
-        val packet = Packet(2, event.data)
+        val packet = Packet(4, event.data)
         storage.networkManager?.sendPacket(packet)
         println("Sent packet")
     }

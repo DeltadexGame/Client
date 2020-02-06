@@ -67,6 +67,7 @@ class Main : ApplicationAdapter() {
                     var card = Card()
                     card.text = abilityName + ": " + abilityDesc
                     card.cardName = cardName
+                    card.pictureLocation = cardName+".png"
                     card.cost = cardCost.toInt()
                     card.attack = cardAttack.toInt()
                     card.health = cardHealth.toInt()
@@ -89,9 +90,12 @@ class Main : ApplicationAdapter() {
         boardSprite!!.setSize(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
         val inputMultiplexer = InputMultiplexer()
 
+        val endTurn = Image(Texture("endturn.png"))
+        endTurn.setBounds(Gdx.graphics.width.toFloat() - endTurn.width, Gdx.graphics.height.toFloat()/2 - endTurn.height/2, endTurn.width, endTurn.height)
+
         storage.stage = Stage()
         storage.stage!!.addActor(boardSprite)
-        // storage.stage!!.addActor(endTurn)
+        storage.stage!!.addActor(endTurn)
         val card = Card(storage.player)
         card.pictureLocation="unnamed.png"
         storage.addCard(card, false)
