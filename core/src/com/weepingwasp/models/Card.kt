@@ -80,11 +80,11 @@ class Card() : Group() {
     }
 
     fun initGraphics() {
-        label = Label("", Label.LabelStyle(getFont(), Color.WHITE))
-        nameLabel = Label("", Label.LabelStyle(getFont(), Color.WHITE))
-        attackLabel = Label("0", Label.LabelStyle(getBigFont(), Color.WHITE))
-        healthLabel = Label("0", Label.LabelStyle(getBigFont(), Color.WHITE))
-        costLabel = Label("0", Label.LabelStyle(getBigFont(), Color.WHITE))
+        label = Label(text, Label.LabelStyle(getFont(), Color.WHITE))
+        nameLabel = Label(cardName, Label.LabelStyle(getFont(), Color.WHITE))
+        attackLabel = Label(attack.toString(), Label.LabelStyle(getBigFont(), Color.WHITE))
+        healthLabel = Label(health.toString(), Label.LabelStyle(getBigFont(), Color.WHITE))
+        costLabel = Label(cost.toString(), Label.LabelStyle(getBigFont(), Color.WHITE))
         image = Image(Texture("card.png"))
 
         label!!.setBounds(42f, 122f, 279f, 117f)

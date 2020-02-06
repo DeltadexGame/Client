@@ -2,7 +2,7 @@ package com.weepingwasp.models
 
 import com.badlogic.gdx.scenes.scene2d.*
 
-class Storage() {
+class Storage {
     val opponent = Player(true)
     val player = Player(false)
     var stage: Stage? = null

@@ -56,10 +56,22 @@ class Main : ApplicationAdapter() {
             3 -> {
                 var content = (packet.Content as LinkedTreeMap<*, *>).get("hand") as List<LinkedTreeMap<*, *>>
                 for(card in content) {
-                    var ability = (card.get("Ability") as LinkedTreeMap<*, *>).get("Description") as String
-                    var name = (card.get("Ability") as LinkedTreeMap<*, *>).get("Name") as String
+                    var abilityDesc = (card.get("Ability") as LinkedTreeMap<*, *>).get("Description") as String
+                    var abilityName = (card.get("Ability") as LinkedTreeMap<*, *>).get("Name") as String
 
-                    newCard.add(arrayListOf(name, ability))
+                    var cardName = (card.get("Name") as String)
+                    var cardCost = (card.get("EnergyCost") as Double)
+                    var cardAttack = (card.get("Attack") as Double)
+                    var cardHealth = (card.get("Health") as Double)
+
+                    var card = Card()
+                    card.text = abilityName + ": " + abilityDesc
+                    card.cardName = cardName
+                    card.cost = cardCost.toInt()
+                    card.attack = cardAttack.toInt()
+                    card.health = cardHealth.toInt()
+
+                    storage.addCard(card, false)
                 }
             } 
             else -> {
@@ -100,14 +112,6 @@ class Main : ApplicationAdapter() {
 
     override
     fun render() {
-        if(newCard.size != 0) {
-            for(card in newCard) {
-                var cad = Card()
-                cad.text = "Ability: " + card[0] + "\n" + card[1]
-                storage.addCard(cad, false)
-            }
-            newCard.clear()
-        }
         graphics!!.render()
     }
 
