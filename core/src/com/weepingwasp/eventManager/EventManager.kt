@@ -1,27 +1,15 @@
 package com.weepingwasp.event_manager
 
-private val eventHandlers = hashMapOf<EventType, ArrayList<EventHandler>>()
+private val eventHandlers = hashMapOf<EventType, ArrayList<(Event)->Unit>>()
 
-fun registerHandler(eventHandler: EventHandler, type: EventType) {
-    eventHandlers.putIfAbsent(type, arrayListOf<EventHandler>())
+fun registerHandler(eventHandler: (Event)->Unit, type: EventType) {
+    eventHandlers.putIfAbsent(type, arrayListOf<(Event)->Unit>())
     eventHandlers[type]!!.add(eventHandler)
 }
 
-fun registerHandler(eventHandler: EventHandler, types: List<EventType>) {
-    for(type in types) {
-        registerHandler(eventHandler, type)
-    }
-}
-
 fun pushEvent(event: Event) {
-    for(handler in eventHandlers.getOrDefault(event.type, arrayListOf<EventHandler>())) {
-        handler.handle(event)
-    }
-}
-
-interface EventHandler {
-    fun handle(event: Event) {
-
+    for(handler in eventHandlers.getOrDefault(event.type, arrayListOf<(Event)->Unit>())) {
+        handler(event)
     }
 }
 

@@ -42,25 +42,25 @@ class CardInputListener : InputListener() {
                 placed = true
                 when(tempPos.x) {
                     in stage.width/8 .. stage.width/8*3 -> {
-                        val event = Event(EventType.PLAYCARD, hashMapOf(
+                        val placeEvent = Event(EventType.PLAYCARD, hashMapOf(
                             "place" to "left",
                             "from" to "x"
                         ))
-                        pushEvent(event)
+                        pushEvent(placeEvent)
                     }
                     in stage.width/8*3 .. stage.width/8*5 -> {
-                        val event = Event(EventType.PLAYCARD, hashMapOf(
+                        val placeEvent = Event(EventType.PLAYCARD, hashMapOf(
                             "place" to "left",
                             "from" to "x"
                         ))
-                        pushEvent(event)
+                        pushEvent(placeEvent)
                     }
                     in stage.width/8*5 .. stage.width/8*7 -> {
-                        val event = Event(EventType.PLAYCARD, hashMapOf(
+                        val placeEvent = Event(EventType.PLAYCARD, hashMapOf(
                             "place" to "left",
                             "from" to "x"
                         ))
-                        pushEvent(event)
+                        pushEvent(placeEvent)
                     }
                     else -> {placed = false}
                 }

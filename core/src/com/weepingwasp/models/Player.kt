@@ -2,12 +2,12 @@ package com.weepingwasp.models
 
 import com.weepingwasp.event_manager.*
 
-class Player(val self: Boolean): EventHandler {
+class Player(val self: Boolean) {
     val cards = arrayListOf<Card>()
     var numCards = 0
 
     init{
-        registerHandler(this, EventType.PLAYCARD)
+        registerHandler(::handle, EventType.PLAYCARD)
     }
 
     fun addCard(card: Card) {
@@ -21,7 +21,6 @@ class Player(val self: Boolean): EventHandler {
         numCards--
     }
 
-    override
     fun handle(event: Event) {
         println("card Played")
     }
