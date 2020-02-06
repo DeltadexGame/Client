@@ -18,7 +18,7 @@ import com.deltadex.network_manager.Packet
 import com.google.gson.internal.*
 
 class Main : ApplicationAdapter() {
-    val connectToServer = false
+    val connectToServer = true
 
     var boardImg: Texture? = null
     var boardSprite: Image? = null
@@ -79,15 +79,18 @@ class Main : ApplicationAdapter() {
 
         storage.stage = Stage()
         storage.stage!!.addActor(boardSprite)
-        // storage.addCard(Card(), false)
+        // storage.stage!!.addActor(endTurn)
+        val card = Card(storage.player)
+        card.pictureLocation="unnamed.png"
+        storage.addCard(card, false)
         // storage.addCard(Card(), false)
 
         inputMultiplexer.addProcessor(storage.stage!!)
         Gdx.input.inputProcessor = inputMultiplexer
 
         if(connectToServer) {
-            var networkManager = NetworkManager("127.0.0.1", 8080, ::packetReceived)
-            networkManager.sendPacket(Packet(0, hashMapOf("username" to "oisin", "token" to "abcdefg")))
+            storage.networkManager = NetworkManager("oisinaylward.me", 8080, ::packetReceived)
+            storage.networkManager!!.sendPacket(Packet(0, hashMapOf("username" to "oisin", "token" to "abcdefg")))
         }
 
         graphics = Graphics(storage)
@@ -102,7 +105,7 @@ class Main : ApplicationAdapter() {
     fun render() {
         if(newCard.size != 0) {
             for(card in newCard) {
-                var cad = Card()
+                var cad = Card(storage.player)
                 cad.text = "Ability: " + card[0] + "\n" + card[1]
                 storage.addCard(cad, false)
             }

@@ -13,11 +13,22 @@ import com.badlogic.gdx.utils.Align
 import com.deltadex.input_processors.CardInputListener
 import com.badlogic.gdx.graphics.g2d.Batch
 
-class Card() : Group() {
+class Card(val player: Player) : Group() {
 
     private var graphicsInitialised = false
 
     var image: Image? = null
+
+    var picture: Image? = null
+
+    var pictureLocation = ""
+    set(value) {
+        field = value
+        if(picture != null) {
+            picture = Image(Texture(value))
+        }
+    }
+    get() = field
 
     var text: String = ""
     set(value) {
@@ -69,13 +80,14 @@ class Card() : Group() {
     }
 
     fun clone(): Card {
-        val card = Card()
+        val card = Card(this.player)
         card.text = this.text
         card.cardName = this.cardName
         card.health = this.health
         card.attack = this.attack
         card.maxHealth = this.maxHealth
         card.cost = this.cost
+        card.pictureLocation = this.pictureLocation
         return card
     }
 
@@ -99,10 +111,12 @@ class Card() : Group() {
         healthLabel!!.setAlignment(Align.center, Align.center)
         costLabel!!.setBounds(261f, 441f, 63f, 63f)
         costLabel!!.setAlignment(Align.center, Align.center)
+        picture!!.setBounds(38f, 262f, 284f, 240f)
         addActor(image)
         addActor(label)
         addActor(healthLabel)
         addActor(attackLabel)
+        addActor(picture)
         addActor(costLabel)
         addActor(nameLabel)
         graphicsInitialised = true
