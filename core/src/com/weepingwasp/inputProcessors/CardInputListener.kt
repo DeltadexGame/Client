@@ -43,7 +43,7 @@ class CardInputListener : InputListener() {
                 when(tempPos.x) {
                     in stage.width/8 .. stage.width/8*3 -> {
                         val card = event.listenerActor as Card
-                        val position = card.player.cards.indexOf(card)
+                        val position = card.player!!.cards.indexOf(card)
                         val placeEvent = Event(EventType.PLAYCARD, hashMapOf(
                             "place" to "0",
                             "from" to "${position}"
@@ -52,7 +52,7 @@ class CardInputListener : InputListener() {
                     }
                     in stage.width/8*3 .. stage.width/8*5 -> {
                         val card = event.listenerActor as Card
-                        val position = card.player.cards.indexOf(card)
+                        val position = card.player!!.cards.indexOf(card)
                         val placeEvent = Event(EventType.PLAYCARD, hashMapOf(
                             "place" to "1",
                             "from" to "${position}"
@@ -61,7 +61,7 @@ class CardInputListener : InputListener() {
                     }
                     in stage.width/8*5 .. stage.width/8*7 -> {
                         val card = event.listenerActor as Card
-                        val position = card.player.cards.indexOf(card)
+                        val position = card.player!!.cards.indexOf(card)
                         val placeEvent = Event(EventType.PLAYCARD, hashMapOf(
                             "place" to "2",
                             "from" to "${position}"

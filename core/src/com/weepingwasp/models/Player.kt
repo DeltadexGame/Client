@@ -1,30 +1,34 @@
 package com.deltadex.models
 
 import com.deltadex.event_manager.*
-import com.deltadex.network_manager.Packet
+import com.deltadex.network_manager.*
+import com.badlogic.gdx.Gdx
 
 class Player(val self: Boolean, val storage: Storage) {
     val cards = arrayListOf<Card>()
-    var numCards = 0
 
     init{
         if(self)
-        registerHandler(::handle, EventType.PLAYCARD)
+            registerHandler(::handle, EventType.PLAYCARD)
     }
 
     fun addCard(card: Card) {
+        card.player = this
         cards.add(card)
-        numCards++
-        card.moveBy(120f * (numCards-1), 0f)
+        if(self) {
+            card.moveBy(120f * (cards.size-1), 0f)
+        }
+        else {
+            card.moveBy(-120f * (cards.size-1), 0f)
+        }
     }
 
     fun removeCard(index: Int) {
         cards.removeAt(index)
-        numCards--
     }
 
     fun handle(event: Event) {
-        val packet = Packet(4, event.data)
+        val packet = Packet(PacketID.PLAY_CARD, event.data)
         storage.networkManager?.sendPacket(packet)
         println("Sent packet")
     }

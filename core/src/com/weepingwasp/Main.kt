@@ -16,6 +16,7 @@ import com.deltadex.graphics.Graphics
 import com.deltadex.network_manager.NetworkManager
 import com.deltadex.network_manager.Packet
 import com.google.gson.internal.*
+import com.deltadex.network_manager.PacketID
 
 class Main : ApplicationAdapter() {
     val connectToServer = true
@@ -53,16 +54,16 @@ class Main : ApplicationAdapter() {
 
     fun packetReceived(packet: Packet): Unit {
         when(packet.PacketID) {
-            3 -> {
+            PacketID.STARTING_HAND -> {
                 var content = (packet.Content as LinkedTreeMap<*, *>).get("hand") as List<LinkedTreeMap<*, *>>
-                for(card in content) {
-                    var abilityDesc = (card.get("Ability") as LinkedTreeMap<*, *>).get("Description") as String
-                    var abilityName = (card.get("Ability") as LinkedTreeMap<*, *>).get("Name") as String
+                for(cardData in content) {
+                    var abilityDesc = (cardData.get("Ability") as LinkedTreeMap<*, *>).get("Description") as String
+                    var abilityName = (cardData.get("Ability") as LinkedTreeMap<*, *>).get("Name") as String
 
-                    var cardName = (card.get("Name") as String)
-                    var cardCost = (card.get("EnergyCost") as Double)
-                    var cardAttack = (card.get("Attack") as Double)
-                    var cardHealth = (card.get("Health") as Double)
+                    var cardName = (cardData.get("Name") as String)
+                    var cardCost = (cardData.get("EnergyCost") as Double)
+                    var cardAttack = (cardData.get("Attack") as Double)
+                    var cardHealth = (cardData.get("Health") as Double)
 
                     var card = Card()
                     card.text = abilityName + ": " + abilityDesc
@@ -92,13 +93,28 @@ class Main : ApplicationAdapter() {
 
         val endTurn = Image(Texture("endturn.png"))
         endTurn.setBounds(Gdx.graphics.width.toFloat() - endTurn.width, Gdx.graphics.height.toFloat()/2 - endTurn.height/2, endTurn.width, endTurn.height)
+        endTurn.addListener(object: InputListener() {
+            override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+                storage.networkManager?.sendPacket(Packet(PacketID.END_TURN, hashMapOf<String, String>()))
+                return true
+            }
+        })
 
         storage.stage = Stage()
         storage.stage!!.addActor(boardSprite)
         storage.stage!!.addActor(endTurn)
-        val card = Card(storage.player)
-        card.pictureLocation="unnamed.png"
+        var card = Card()
+        card.pictureLocation = "Zombie.png"
+        card.cardName = "Zombie"
+        card.text = "Walking Dead:\nMonster resurrected at half health upon death"
+        card.attack = 1
+        card.health = 2
+        card.cost = 1
         storage.addCard(card, false)
+        var card1 = Card()
+        storage.addCard(card1, true)
+        card1 = Card()
+        storage.addCard(card1, true)
         // storage.addCard(Card(), false)
 
         inputMultiplexer.addProcessor(storage.stage!!)
@@ -106,7 +122,7 @@ class Main : ApplicationAdapter() {
 
         if(connectToServer) {
             storage.networkManager = NetworkManager("oisinaylward.me", 8080, ::packetReceived)
-            storage.networkManager!!.sendPacket(Packet(0, hashMapOf("username" to "oisin", "token" to "abcdefg")))
+            storage.networkManager!!.sendPacket(Packet(PacketID.AUTH_INFO, hashMapOf("username" to "oisin", "token" to "abcdefg")))
         }
 
         graphics = Graphics(storage)

@@ -12,14 +12,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
 import com.deltadex.input_processors.CardInputListener
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.Vector2
 
-class Card(val player: Player) : Group() {
+class Card() : Group() {
 
     private var graphicsInitialised = false
 
     var image: Image? = null
 
     var picture: Image? = null
+
+    var player: Player? = null
 
     var pictureLocation = ""
     set(value) {
@@ -42,6 +45,9 @@ class Card(val player: Player) : Group() {
     set(value) {
         field = value
         nameLabel?.setText(value)
+        if(pictureLocation == "") {
+            pictureLocation = value + ".png"
+        }
     }
     get() = field
     private var nameLabel: Label? = null
@@ -76,11 +82,11 @@ class Card(val player: Player) : Group() {
 
     init {
         this.scaleBy(-0.7f)
-        this.addListener(inputListener)
     }
 
     fun clone(): Card {
-        val card = Card(this.player)
+        val card = Card()
+        card.player = this.player
         card.text = this.text
         card.cardName = this.cardName
         card.health = this.health
@@ -92,34 +98,48 @@ class Card(val player: Player) : Group() {
     }
 
     fun initGraphics() {
-        label = Label(text, Label.LabelStyle(getFont(), Color.WHITE))
-        nameLabel = Label(cardName, Label.LabelStyle(getFont(), Color.WHITE))
-        attackLabel = Label(attack.toString(), Label.LabelStyle(getBigFont(), Color.WHITE))
-        healthLabel = Label(health.toString(), Label.LabelStyle(getBigFont(), Color.WHITE))
-        costLabel = Label(cost.toString(), Label.LabelStyle(getBigFont(), Color.WHITE))
-        image = Image(Texture("card.png"))
-        picture = Image(Texture(pictureLocation))
-
-        label!!.setBounds(42f, 122f, 279f, 117f)
-        label!!.setAlignment(Align.topLeft, Align.left)
-        label!!.setWrap(true)
-        nameLabel!!.setBounds(42f, 505f, 279f, 25f)
-        nameLabel!!.setAlignment(Align.bottomLeft, Align.center)
-        attackLabel!!.setBounds(40f, 40f, 56f, 56f)
-        attackLabel!!.setAlignment(Align.center, Align.center)
-        healthLabel!!.setBounds(264f, 40f, 56f, 56f)
-        healthLabel!!.setAlignment(Align.center, Align.center)
-        costLabel!!.setBounds(261f, 441f, 63f, 63f)
-        costLabel!!.setAlignment(Align.center, Align.center)
-        picture!!.setBounds(38f, 262f, 284f, 240f)
-        addActor(image)
-        addActor(label)
-        addActor(healthLabel)
-        addActor(attackLabel)
-        addActor(picture)
-        addActor(costLabel)
-        addActor(nameLabel)
-        graphicsInitialised = true
+        if(this.player != null) {
+            if(this.player!!.self) {
+                this.addListener(inputListener)
+                image = Image(Texture("card.png"))
+                label = Label(text, Label.LabelStyle(getFont(), Color.WHITE))
+                nameLabel = Label(cardName, Label.LabelStyle(getFont(), Color.WHITE))
+                attackLabel = Label(attack.toString(), Label.LabelStyle(getBigFont(), Color.WHITE))
+                healthLabel = Label(health.toString(), Label.LabelStyle(getBigFont(), Color.WHITE))
+                costLabel = Label(cost.toString(), Label.LabelStyle(getBigFont(), Color.WHITE))
+                if(pictureLocation != "")
+                    picture = Image(Texture(pictureLocation))
+                else
+                    picture = Image()
+                label?.setBounds(42f, 122f, 279f, 117f)
+                label?.setAlignment(Align.topLeft, Align.left)
+                label?.setWrap(true)
+                nameLabel?.setBounds(42f, 505f, 279f, 25f)
+                nameLabel?.setAlignment(Align.bottomLeft, Align.center)
+                attackLabel?.setBounds(40f, 40f, 56f, 56f)
+                attackLabel?.setAlignment(Align.center, Align.center)
+                healthLabel?.setBounds(264f, 40f, 56f, 56f)
+                healthLabel?.setAlignment(Align.center, Align.center)
+                costLabel?.setBounds(261f, 441f, 63f, 63f)
+                costLabel?.setAlignment(Align.center, Align.center)
+                picture?.setBounds(38f, 262f, 284f, 240f)
+                addActor(image)
+                addActor(label)
+                addActor(healthLabel)
+                addActor(attackLabel)
+                addActor(picture)
+                addActor(costLabel)
+                addActor(nameLabel)
+            }
+            else {
+                image = Image(Texture("cardBack.png"))
+                var tempVector = Vector2(image!!.width, image!!.height)
+                tempVector = this.localToParentCoordinates(tempVector)
+                this.moveBy(Gdx.graphics.width - tempVector.x, Gdx.graphics.height - tempVector.y)
+                addActor(image)
+            }
+            graphicsInitialised = true
+        }
     }
 
     override
