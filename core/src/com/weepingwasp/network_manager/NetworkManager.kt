@@ -4,7 +4,7 @@ import java.net.*
 import java.io.*
 import com.google.gson.*
 
-data class Packet(val PacketID: PacketID, val Content: Any)
+data class Packet(val PacketID: Int, val Content: Any)
 
 class NetworkManager(ip: String, port: Int, received: (Packet) -> Unit) {
     val socket: Socket

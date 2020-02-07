@@ -54,7 +54,7 @@ class Main : ApplicationAdapter() {
 
     fun packetReceived(packet: Packet): Unit {
         when(packet.PacketID) {
-            PacketID.STARTING_HAND -> {
+            PacketID.STARTING_HAND.id -> {
                 var content = (packet.Content as LinkedTreeMap<*, *>).get("hand") as List<LinkedTreeMap<*, *>>
                 for(cardData in content) {
                     var abilityDesc = (cardData.get("Ability") as LinkedTreeMap<*, *>).get("Description") as String
@@ -95,7 +95,7 @@ class Main : ApplicationAdapter() {
         endTurn.setBounds(Gdx.graphics.width.toFloat() - endTurn.width, Gdx.graphics.height.toFloat()/2 - endTurn.height/2, endTurn.width, endTurn.height)
         endTurn.addListener(object: InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                storage.networkManager?.sendPacket(Packet(PacketID.END_TURN, hashMapOf<String, String>()))
+                storage.networkManager?.sendPacket(Packet(PacketID.END_TURN.id, hashMapOf<String, String>()))
                 return true
             }
         })
@@ -122,7 +122,7 @@ class Main : ApplicationAdapter() {
 
         if(connectToServer) {
             storage.networkManager = NetworkManager("oisinaylward.me", 8080, ::packetReceived)
-            storage.networkManager!!.sendPacket(Packet(PacketID.AUTH_INFO, hashMapOf("username" to "oisin", "token" to "abcdefg")))
+            storage.networkManager!!.sendPacket(Packet(PacketID.AUTH_INFO.id, hashMapOf("username" to "oisin", "token" to "abcdefg")))
         }
 
         graphics = Graphics(storage)
