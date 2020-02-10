@@ -72,18 +72,21 @@ class CardInputListener : InputListener() {
                 }
             }
             if(!placed) {
-                event.listenerActor.setPosition(cardOriginalPos.x, cardOriginalPos.y)
-                event.listenerActor.scaleBy(-0.1f)
-                event.listenerActor.zIndex = originalZIndex
+                
             }
             
         }
     }
 
+    fun resetLocation(actor: Actor) {
+        actor.setPosition(cardOriginalPos.x, cardOriginalPos.y)
+        actor.scaleBy(-0.1f)
+        actor.zIndex = originalZIndex
+    }
+
     override
     fun touchDragged(event: InputEvent, x: Float, y: Float, pointer: Int) {
-        val stage = event.listenerActor.stage
-        stage.actors.removeValue(enlargedCard, false)
+        enlargedCard?.remove()
         tempPos.set(x, y)
         tempPos.set(event.listenerActor.localToStageCoordinates(tempPos))
         event.listenerActor.setPosition(cardOriginalPos.x + tempPos.x - touchPos.x, cardOriginalPos.y + tempPos.y - touchPos.y)
@@ -95,13 +98,14 @@ class CardInputListener : InputListener() {
         enlargedCard!!.initGraphics()
         enlargedCard!!.scaleBy(1f)
         val stage = event.listenerActor.stage
-        enlargedCard!!.setPosition(stage.width / 2 - enlargedCard!!.image!!.width * enlargedCard!!.scaleX / 2, stage.height / 2 - enlargedCard!!.image!!.height * enlargedCard!!.scaleY / 2)
-        stage.addActor(enlargedCard)
+        if(stage != null){
+            enlargedCard!!.setPosition(stage.width / 2 - enlargedCard!!.image!!.width * enlargedCard!!.scaleX / 2, stage.height / 2 - enlargedCard!!.image!!.height * enlargedCard!!.scaleY / 2)
+            stage.addActor(enlargedCard)
+        }
     }
 
     override
     fun exit(event: InputEvent, x: Float, y: Float, pointer: Int, toActor: Actor?) {
-        val stage = event.listenerActor.stage
-        stage.actors.removeValue(enlargedCard!!, false)
+        enlargedCard?.remove()
     }
 }

@@ -16,8 +16,9 @@ fun pushEvent(event: Event) {
 enum class EventType() {
     PLAYCARD,
     ENDTURN,
+    PLAYCARDRESULT,
 }
 
-class Event(val type: EventType, val data: HashMap<String, String>) {
+class Event(val type: EventType, val data: Map<String, String>) {
 
 }

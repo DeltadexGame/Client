@@ -4,8 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g2d.freetype.*
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -13,6 +11,9 @@ import com.badlogic.gdx.utils.Align
 import com.deltadex.input_processors.CardInputListener
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
+import com.deltadex.event_manager.*
+import com.deltadex.getFont
+import com.deltadex.getBigFont
 
 class Card() : Group() {
 
@@ -134,7 +135,7 @@ class Card() : Group() {
             else {
                 image = Image(Texture("cardBack.png"))
                 var tempVector = Vector2(image!!.width, image!!.height)
-                tempVector = this.localToParentCoordinates(tempVector)
+                tempVector = this.localToStageCoordinates(tempVector)
                 this.moveBy(Gdx.graphics.width - tempVector.x, Gdx.graphics.height - tempVector.y)
                 addActor(image)
             }
@@ -149,22 +150,4 @@ class Card() : Group() {
         }
         super.draw(batch, parentAlpha)
     }
-}
-
-fun getFont(): BitmapFont {
-    val generator = FreeTypeFontGenerator(Gdx.files.internal("fonts/Arial.ttf"))
-    val parameter = FreeTypeFontParameter()
-    parameter.size = 20
-    val font = generator.generateFont(parameter)
-    generator.dispose()
-    return font
-}
-
-fun getBigFont(): BitmapFont {
-    val generator = FreeTypeFontGenerator(Gdx.files.internal("fonts/Arial.ttf"))
-    val parameter = FreeTypeFontParameter()
-    parameter.size = 40
-    val font = generator.generateFont(parameter)
-    generator.dispose()
-    return font
 }

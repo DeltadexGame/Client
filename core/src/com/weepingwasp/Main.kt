@@ -17,6 +17,8 @@ import com.deltadex.network_manager.NetworkManager
 import com.deltadex.network_manager.Packet
 import com.google.gson.internal.*
 import com.deltadex.network_manager.PacketID
+import com.deltadex.event_manager.*
+import com.deltadex.event_manager.Event
 
 class Main : ApplicationAdapter() {
     val connectToServer = true
@@ -76,6 +78,14 @@ class Main : ApplicationAdapter() {
                     storage.addCard(card, false)
                 }
             } 
+            PacketID.PLAY_CARD_RESULT.id -> {
+                val result = (packet.Content as LinkedTreeMap<String, Any>).toMap()
+                var stringResult = hashMapOf<String, String>()
+                for((key, value) in result) {
+                    stringResult[key] = value.toString()
+                }
+                pushEvent(Event(EventType.PLAYCARDRESULT, stringResult))
+            }
             else -> {
                 println(packet)
             }
@@ -103,25 +113,25 @@ class Main : ApplicationAdapter() {
         storage.stage = Stage()
         storage.stage!!.addActor(boardSprite)
         storage.stage!!.addActor(endTurn)
-        var card = Card()
-        card.pictureLocation = "Zombie.png"
-        card.cardName = "Zombie"
-        card.text = "Walking Dead:\nMonster resurrected at half health upon death"
-        card.attack = 1
-        card.health = 2
-        card.cost = 1
-        storage.addCard(card, false)
-        var card1 = Card()
-        storage.addCard(card1, true)
-        card1 = Card()
-        storage.addCard(card1, true)
+        // var card = Card()
+        // card.pictureLocation = "Zombie.png"
+        // card.cardName = "Zombie"
+        // card.text = "Walking Dead:\nMonster resurrected at half health upon death"
+        // card.attack = 1
+        // card.health = 2
+        // card.cost = 1
+        // storage.addCard(card, false)
+        // var card1 = Card()
+        // storage.addCard(card1, true)
+        // card1 = Card()
+        // storage.addCard(card1, true)
         // storage.addCard(Card(), false)
 
         inputMultiplexer.addProcessor(storage.stage!!)
         Gdx.input.inputProcessor = inputMultiplexer
 
         if(connectToServer) {
-            storage.networkManager = NetworkManager("oisinaylward.me", 8080, ::packetReceived)
+            storage.networkManager = NetworkManager("localhost", 8080, ::packetReceived)
             storage.networkManager!!.sendPacket(Packet(PacketID.AUTH_INFO.id, hashMapOf("username" to "oisin", "token" to "abcdefg")))
         }
 
