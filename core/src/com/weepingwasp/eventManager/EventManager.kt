@@ -2,13 +2,13 @@ package com.deltadex.event_manager
 
 private val eventHandlers = hashMapOf<EventType, ArrayList<(Event)->Unit>>()
 
-fun registerHandler(eventHandler: (Event)->Unit, type: EventType) {
+fun registerHandler(eventHandler: (Event) -> Unit, type: EventType) {
     eventHandlers.putIfAbsent(type, arrayListOf<(Event)->Unit>())
     eventHandlers[type]!!.add(eventHandler)
 }
 
 fun pushEvent(event: Event) {
-    for(handler in eventHandlers.getOrDefault(event.type, arrayListOf<(Event)->Unit>())) {
+    for (handler in eventHandlers.getOrDefault(event.type, arrayListOf<(Event)->Unit>())) {
         handler(event)
     }
 }
@@ -21,6 +21,6 @@ enum class EventType() {
     MONSTERDAMAGE,
 }
 
-class Event(val type: EventType, val data: Map<String, String>) {
+class Event(val type: EventType, val data: Map<String, String>)
 
 }

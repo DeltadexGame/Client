@@ -4,21 +4,20 @@ import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.freetype.*
 import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.deltadex.models.Storage
-import com.deltadex.models.Card
-import com.deltadex.graphics.Graphics
-import com.deltadex.network_manager.NetworkManager
-import com.deltadex.network_manager.Packet
-import com.google.gson.internal.*
-import com.deltadex.network_manager.PacketID
 import com.deltadex.event_manager.*
 import com.deltadex.event_manager.Event
+import com.deltadex.graphics.Graphics
+import com.deltadex.models.Card
+import com.deltadex.models.Storage
+import com.deltadex.network_manager.NetworkManager
+import com.deltadex.network_manager.Packet
+import com.deltadex.network_manager.PacketID
+import com.google.gson.internal.*
 
 class Main : ApplicationAdapter() {
     val connectToServer = true
@@ -54,15 +53,13 @@ class Main : ApplicationAdapter() {
         return pixmap
     }
 
-    fun packetReceived(packet: Packet): Unit {
-        when(packet.PacketID) {
+    fun packetReceived(packet: Packet) {
+        when (packet.PacketID) {
             PacketID.SELF_INIT.id -> {
                 val content = (packet.Content as LinkedTreeMap<*, *>)
-
             }
             PacketID.OPPONENT_INIT.id -> {
                 val content = (packet.Content as LinkedTreeMap<*, *>)
-
             }
             PacketID.OPPONENT_STARTING_HAND.id -> {
                 val cards = ((packet.Content as LinkedTreeMap<*, *>).get("hand") as Double).toInt()
@@ -72,7 +69,7 @@ class Main : ApplicationAdapter() {
             }
             PacketID.STARTING_HAND.id -> {
                 val content = (packet.Content as LinkedTreeMap<*, *>).get("hand") as List<LinkedTreeMap<*, *>>
-                for(cardData in content) {
+                for (cardData in content) {
                     val abilityDesc = (cardData.get("Ability") as LinkedTreeMap<*, *>).get("Description") as String
                     val abilityName = (cardData.get("Ability") as LinkedTreeMap<*, *>).get("Name") as String
 
@@ -90,11 +87,11 @@ class Main : ApplicationAdapter() {
 
                     storage.addCard(card, false)
                 }
-            } 
+            }
             PacketID.PLAY_CARD_RESULT.id -> {
                 val result = (packet.Content as LinkedTreeMap<String, Any>).toMap()
                 var stringResult = hashMapOf<String, String>()
-                for((key, value) in result) {
+                for ((key, value) in result) {
                     stringResult[key] = value.toString()
                 }
                 pushEvent(Event(EventType.PLAYCARDRESULT, stringResult))
@@ -112,7 +109,6 @@ class Main : ApplicationAdapter() {
                 pushEvent(Event(EventType.ENEMYPLAYCARD, eventData))
             }
             PacketID.CHANGE_ENERGY.id -> {
-
             }
             PacketID.END_TURN_MONSTER_ATTACKED.id -> {
                 val content = packet.Content as LinkedTreeMap<*, *>
@@ -124,7 +120,6 @@ class Main : ApplicationAdapter() {
                 pushEvent(Event(EventType.MONSTERDAMAGE, eventData))
             }
             PacketID.END_TURN_PLAYER_ATTACKED.id -> {
-
             }
             else -> {
                 println(packet)
@@ -142,8 +137,8 @@ class Main : ApplicationAdapter() {
         val inputMultiplexer = InputMultiplexer()
 
         val endTurn = Image(Texture("endturn.png"))
-        endTurn.setBounds(Gdx.graphics.width.toFloat() - endTurn.width, Gdx.graphics.height.toFloat()/2 - endTurn.height/2, endTurn.width, endTurn.height)
-        endTurn.addListener(object: InputListener() {
+        endTurn.setBounds(Gdx.graphics.width.toFloat() - endTurn.width, Gdx.graphics.height.toFloat() / 2 - endTurn.height / 2, endTurn.width, endTurn.height)
+        endTurn.addListener(object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 storage.networkManager?.sendPacket(Packet(PacketID.END_TURN.id, hashMapOf<String, String>()))
                 return true
@@ -170,7 +165,7 @@ class Main : ApplicationAdapter() {
         inputMultiplexer.addProcessor(storage.stage!!)
         Gdx.input.inputProcessor = inputMultiplexer
 
-        if(connectToServer) {
+        if (connectToServer) {
             storage.networkManager = NetworkManager("localhost", 8080, ::packetReceived)
             storage.networkManager!!.sendPacket(Packet(PacketID.AUTH_INFO.id, hashMapOf("username" to "oisin", "token" to "abcdefg")))
         }
@@ -180,7 +175,7 @@ class Main : ApplicationAdapter() {
 
     override
     fun resize(width: Int, height: Int) {
-        storage.stage!!.getViewport().update(width, height, true);
+        storage.stage!!.getViewport().update(width, height, true)
     }
 
     override

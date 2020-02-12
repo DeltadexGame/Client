@@ -1,9 +1,9 @@
 package com.deltadex.network_manager
 
-import java.net.*
-import java.io.*
-import com.google.gson.*
 import com.badlogic.gdx.Gdx
+import com.google.gson.*
+import java.io.*
+import java.net.*
 
 data class Packet(val PacketID: Int, val Content: Any)
 
@@ -16,10 +16,10 @@ class NetworkManager(ip: String, port: Int, received: (Packet) -> Unit) {
         out = PrintWriter(socket.getOutputStream(), true)
         Thread {
             var in_stream = BufferedReader(InputStreamReader(socket.getInputStream()))
-            while(true) {
+            while (true) {
                 val read: String? = in_stream.readLine()
                 val packet: Packet? = Gson().fromJson(read, Packet::class.java)
-                if(packet == null) {
+                if (packet == null) {
                     Gdx.app.exit()
                     continue
                 }
@@ -32,7 +32,6 @@ class NetworkManager(ip: String, port: Int, received: (Packet) -> Unit) {
         val output = Gson().toJson(packet)
         out.println(output)
     }
-
 }
 
 enum class PacketID(val id: Int) {

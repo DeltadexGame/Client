@@ -2,14 +2,13 @@ package com.deltadex.models
 
 import com.deltadex.event_manager.*
 import com.deltadex.network_manager.*
-import com.badlogic.gdx.Gdx
 
 class Player(val self: Boolean, val storage: Storage) {
     val cards = arrayListOf<Card>()
     val board = arrayOf<Monster?>(null, null, null)
 
-    init{
-        if(self) {
+    init {
+        if (self) {
             registerHandler(::handle, EventType.PLAYCARD)
             registerHandler(::placeResult, EventType.PLAYCARDRESULT)
         } else {
@@ -19,7 +18,7 @@ class Player(val self: Boolean, val storage: Storage) {
     }
 
     fun monsterDamaged(event: Event) {
-        if(event.data["ownership"]!!.toBoolean() == self) {
+        if (event.data["ownership"]!!.toBoolean() == self) {
             board[event.data["position"]!!.toInt()]!!.health = event.data["health"]!!.toInt()
         }
     }
@@ -38,11 +37,10 @@ class Player(val self: Boolean, val storage: Storage) {
     fun addCard(card: Card) {
         card.player = this
         cards.add(card)
-        if(self) {
-            card.moveBy(120f * (cards.size-1), 0f)
-        }
-        else {
-            card.moveBy(-120f * (cards.size-1), 0f)
+        if (self) {
+            card.moveBy(120f * (cards.size - 1), 0f)
+        } else {
+            card.moveBy(-120f * (cards.size - 1), 0f)
         }
     }
 
@@ -52,7 +50,7 @@ class Player(val self: Boolean, val storage: Storage) {
     }
 
     fun placeResult(event: Event) {
-        if(event.data["result"] == "true") {
+        if (event.data["result"] == "true") {
             place(event.data["from"]!!.toFloat().toInt(), event.data["place"]!!.toFloat().toInt(), cards[event.data["from"]!!.toFloat().toInt()])
         } else {
             cards[event.data["from"]!!.toFloat().toInt()].inputListener.resetLocation(cards[event.data["from"]!!.toFloat().toInt()])
