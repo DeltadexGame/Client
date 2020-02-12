@@ -56,21 +56,34 @@ class Main : ApplicationAdapter() {
 
     fun packetReceived(packet: Packet): Unit {
         when(packet.PacketID) {
+            PacketID.SELF_INIT.id -> {
+                val content = (packet.Content as LinkedTreeMap<*, *>)
+
+            }
+            PacketID.OPPONENT_INIT.id -> {
+                val content = (packet.Content as LinkedTreeMap<*, *>)
+
+            }
+            PacketID.OPPONENT_STARTING_HAND.id -> {
+                val cards = ((packet.Content as LinkedTreeMap<*, *>).get("hand") as Double).toInt()
+                for (i in 0 until cards) {
+                    storage.addCard(Card(), true)
+                }
+            }
             PacketID.STARTING_HAND.id -> {
-                var content = (packet.Content as LinkedTreeMap<*, *>).get("hand") as List<LinkedTreeMap<*, *>>
+                val content = (packet.Content as LinkedTreeMap<*, *>).get("hand") as List<LinkedTreeMap<*, *>>
                 for(cardData in content) {
-                    var abilityDesc = (cardData.get("Ability") as LinkedTreeMap<*, *>).get("Description") as String
-                    var abilityName = (cardData.get("Ability") as LinkedTreeMap<*, *>).get("Name") as String
+                    val abilityDesc = (cardData.get("Ability") as LinkedTreeMap<*, *>).get("Description") as String
+                    val abilityName = (cardData.get("Ability") as LinkedTreeMap<*, *>).get("Name") as String
 
-                    var cardName = (cardData.get("Name") as String)
-                    var cardCost = (cardData.get("EnergyCost") as Double)
-                    var cardAttack = (cardData.get("Attack") as Double)
-                    var cardHealth = (cardData.get("Health") as Double)
+                    val cardName = (cardData.get("Name") as String)
+                    val cardCost = (cardData.get("EnergyCost") as Double)
+                    val cardAttack = (cardData.get("Attack") as Double)
+                    val cardHealth = (cardData.get("Health") as Double)
 
-                    var card = Card()
+                    val card = Card()
                     card.text = abilityName + ": " + abilityDesc
                     card.cardName = cardName
-                    card.pictureLocation = cardName+".png"
                     card.cost = cardCost.toInt()
                     card.attack = cardAttack.toInt()
                     card.health = cardHealth.toInt()
@@ -85,6 +98,33 @@ class Main : ApplicationAdapter() {
                     stringResult[key] = value.toString()
                 }
                 pushEvent(Event(EventType.PLAYCARDRESULT, stringResult))
+            }
+            PacketID.OPPONENT_PLAY_CARD.id -> {
+                var content = (packet.Content as LinkedTreeMap<*, *>)
+                val eventData = hashMapOf(
+                    "name" to (content.get("card") as LinkedTreeMap<*, *>).get("Name").toString(),
+                    "abilityName" to ((content.get("card") as LinkedTreeMap<*, *>).get("Ability") as LinkedTreeMap<*, *>).get("Name").toString(),
+                    "cost" to (content.get("card") as LinkedTreeMap<*, *>).get("EnergyCost").toString(),
+                    "attack" to (content.get("card") as LinkedTreeMap<*, *>).get("Attack").toString(),
+                    "health" to (content.get("card") as LinkedTreeMap<*, *>).get("Health").toString(),
+                    "position" to content.get("position").toString()
+                )
+                pushEvent(Event(EventType.ENEMYPLAYCARD, eventData))
+            }
+            PacketID.CHANGE_ENERGY.id -> {
+
+            }
+            PacketID.END_TURN_MONSTER_ATTACKED.id -> {
+                val content = packet.Content as LinkedTreeMap<*, *>
+                val eventData = hashMapOf(
+                    "ownership" to (!(content.get("ownership") as Boolean)).toString(),
+                    "position" to (content.get("position") as Double).toInt().toString(),
+                    "health" to ((content.get("monster") as LinkedTreeMap<*, *>).get("Health") as Double).toInt().toString()
+                )
+                pushEvent(Event(EventType.MONSTERDAMAGE, eventData))
+            }
+            PacketID.END_TURN_PLAYER_ATTACKED.id -> {
+
             }
             else -> {
                 println(packet)

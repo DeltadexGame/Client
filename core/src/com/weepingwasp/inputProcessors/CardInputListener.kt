@@ -72,7 +72,7 @@ class CardInputListener : InputListener() {
                 }
             }
             if(!placed) {
-                
+                resetLocation(event.listenerActor)
             }
             
         }

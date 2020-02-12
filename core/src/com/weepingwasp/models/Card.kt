@@ -14,6 +14,8 @@ import com.badlogic.gdx.math.Vector2
 import com.deltadex.event_manager.*
 import com.deltadex.getFont
 import com.deltadex.getBigFont
+import com.deltadex.graphics.HealthLabel
+import com.deltadex.graphics.AttackLabel
 
 class Card() : Group() {
 
@@ -56,18 +58,18 @@ class Card() : Group() {
     var attack: Int = 0
     set(value) {
         field = value
-        attackLabel?.setText(value)
+        attackLabel?.value = value
     }
     get() = field
-    private var attackLabel: Label? = null
+    private var attackLabel: AttackLabel? = null
 
     var health: Int = 0
     set(value) {
         field = value
-        healthLabel?.setText(value)
+        healthLabel?.value = value
     }
     get() = field
-    private var healthLabel: Label? = null
+    private var healthLabel: HealthLabel? = null
 
     var cost: Int = 0
     set(value) {
@@ -105,8 +107,8 @@ class Card() : Group() {
                 image = Image(Texture("card.png"))
                 label = Label(text, Label.LabelStyle(getFont(), Color.WHITE))
                 nameLabel = Label(cardName, Label.LabelStyle(getFont(), Color.WHITE))
-                attackLabel = Label(attack.toString(), Label.LabelStyle(getBigFont(), Color.WHITE))
-                healthLabel = Label(health.toString(), Label.LabelStyle(getBigFont(), Color.WHITE))
+                attackLabel = AttackLabel(attack)
+                healthLabel = HealthLabel(health)
                 costLabel = Label(cost.toString(), Label.LabelStyle(getBigFont(), Color.WHITE))
                 if(pictureLocation != "")
                     picture = Image(Texture(pictureLocation))
@@ -117,10 +119,8 @@ class Card() : Group() {
                 label?.setWrap(true)
                 nameLabel?.setBounds(42f, 505f, 279f, 25f)
                 nameLabel?.setAlignment(Align.bottomLeft, Align.center)
-                attackLabel?.setBounds(40f, 40f, 56f, 56f)
-                attackLabel?.setAlignment(Align.center, Align.center)
-                healthLabel?.setBounds(264f, 40f, 56f, 56f)
-                healthLabel?.setAlignment(Align.center, Align.center)
+                attackLabel?.setBounds(36f, 36f, 64f, 64f)
+                healthLabel?.setBounds(260f, 36f, 64f, 64f)
                 costLabel?.setBounds(261f, 441f, 63f, 63f)
                 costLabel?.setAlignment(Align.center, Align.center)
                 picture?.setBounds(38f, 262f, 284f, 240f)
@@ -134,9 +134,7 @@ class Card() : Group() {
             }
             else {
                 image = Image(Texture("cardBack.png"))
-                var tempVector = Vector2(image!!.width, image!!.height)
-                tempVector = this.localToStageCoordinates(tempVector)
-                this.moveBy(Gdx.graphics.width - tempVector.x, Gdx.graphics.height - tempVector.y)
+                this.moveBy(stage.width - image!!.width * this.scaleX, stage.height - image!!.height * this.scaleY)
                 addActor(image)
             }
             graphicsInitialised = true

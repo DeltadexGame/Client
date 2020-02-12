@@ -38,10 +38,16 @@ class NetworkManager(ip: String, port: Int, received: (Packet) -> Unit) {
 enum class PacketID(val id: Int) {
     AUTH_INFO(1),
     AUTH_RESULT(2),
-    GAME_INIT(101),
-    STARTING_HAND(102),
+    SELF_INIT(101),
+    OPPONENT_INIT(102),
+    STARTING_HAND(103),
+    OPPONENT_STARTING_HAND(104),
     PLAY_CARD(201),
     PLAY_CARD_RESULT(202),
     OPPONENT_PLAY_CARD(203),
+    CHANGE_ENERGY(204),
     END_TURN(301),
+    END_TURN_MONSTER_ATTACKED(302),
+    END_TURN_PLAYER_ATTACKED(303),
+    PACKET_NOT_FOUND(404),
 }

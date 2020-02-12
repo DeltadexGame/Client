@@ -9,23 +9,25 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.deltadex.getBigFont
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
+import com.deltadex.graphics.HealthLabel
+import com.deltadex.graphics.AttackLabel
 
 class Monster(val card: Card, val position: Int, val own: Boolean): Group() {
     var attack = card.attack
     set(value) {
         field = value
-        attackLabel?.setText(value)
+        attackLabel?.value = value
     }
     get() = field
-    var attackLabel: Label? = null
+    var attackLabel: AttackLabel? = null
 
     var health = card.health
     set(value) {
         field = value
-        healthLabel?.setText(value)
+        healthLabel?.value = value
     }
     get() = field
-    var healthLabel: Label? = null
+    var healthLabel: HealthLabel? = null
 
     var maxHealth = card.maxHealth
 
@@ -43,9 +45,11 @@ class Monster(val card: Card, val position: Int, val own: Boolean): Group() {
     }
 
     fun initGraphics() {
-        attackLabel = Label(attack.toString(), Label.LabelStyle(getBigFont(), Color.WHITE))
-        healthLabel = Label(attack.toString(), Label.LabelStyle(getBigFont(), Color.WHITE))
+        attackLabel = AttackLabel(attack)
+        healthLabel = HealthLabel(health)
         picture = Image(Texture(pictureLocation))
+        attackLabel!!.setBounds(picture!!.width/2-64f, 0f, 64f, 64f)
+        healthLabel!!.setBounds(picture!!.width/2, 0f, 64f, 64f)
         addActor(picture)
         addActor(attackLabel)
         addActor(healthLabel)
