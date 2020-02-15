@@ -19,8 +19,8 @@ enum class EventType() {
     PLAYCARDRESULT,
     ENEMYPLAYCARD,
     MONSTERDAMAGE,
+    SPAWNMONSTER,
 }
 
 class Event(val type: EventType, val data: Map<String, String>)
 
-}

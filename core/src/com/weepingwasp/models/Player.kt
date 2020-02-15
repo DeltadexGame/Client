@@ -15,23 +15,37 @@ class Player(val self: Boolean, val storage: Storage) {
             registerHandler(::enemyPlace, EventType.ENEMYPLAYCARD)
         }
         registerHandler(::monsterDamaged, EventType.MONSTERDAMAGE)
+        registerHandler(::monsterSpawn, EventType.SPAWNMONSTER)
+    }
+
+    fun monsterSpawn(event: Event) {
+        if (event.data["ownership"]!!.toBoolean() == self) {
+            val place = event.data["position"]!!.toDouble().toInt()
+            val card = Card()
+            card.player = this
+            card.cardName = event.data["name"]!!
+            card.text = event.data["abilityName"] + ": " + event.data["abilityDescription"]
+            card.cost = 0
+            card.attack = event.data["attack"]!!.toFloat().toInt()
+            card.health = event.data["health"]!!.toFloat().toInt()
+            board[place] = Monster(card, place, self)
+            storage.stage!!.addActor(board[place])
+        }
     }
 
     fun monsterDamaged(event: Event) {
         if (event.data["ownership"]!!.toBoolean() == self) {
-            board[event.data["position"]!!.toInt()]!!.health = event.data["health"]!!.toInt()
+            if (event.data["died"]!!.toBoolean()) {
+                board[event.data["position"]!!.toInt()]!!.remove()
+                board[event.data["position"]!!.toInt()] = null
+            } else {
+                board[event.data["position"]!!.toInt()]!!.health = event.data["health"]!!.toInt()
+            }
         }
     }
 
     fun enemyPlace(event: Event) {
-        val card = Card()
-        card.player = this
-        card.cardName = event.data["name"]!!
-        card.text = event.data["abilityName"] + ": " + event.data["abilityDescription"]
-        card.cost = event.data["cost"]!!.toFloat().toInt()
-        card.attack = event.data["attack"]!!.toFloat().toInt()
-        card.health = event.data["health"]!!.toFloat().toInt()
-        place(0, event.data["position"]!!.toFloat().toInt(), card)
+        removeCard(0)
     }
 
     fun addCard(card: Card) {
@@ -51,16 +65,10 @@ class Player(val self: Boolean, val storage: Storage) {
 
     fun placeResult(event: Event) {
         if (event.data["result"] == "true") {
-            place(event.data["from"]!!.toFloat().toInt(), event.data["place"]!!.toFloat().toInt(), cards[event.data["from"]!!.toFloat().toInt()])
+            removeCard(event.data["from"]!!.toFloat().toInt())
         } else {
             cards[event.data["from"]!!.toFloat().toInt()].inputListener.resetLocation(cards[event.data["from"]!!.toFloat().toInt()])
         }
-    }
-
-    fun place(from: Int, place: Int, card: Card) {
-        board[place] = Monster(card, place, self)
-        storage.stage!!.addActor(board[place])
-        removeCard(from)
     }
 
     fun handle(event: Event) {

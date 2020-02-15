@@ -54,6 +54,9 @@ class Main : ApplicationAdapter() {
     }
 
     fun packetReceived(packet: Packet) {
+        if(System.getenv("DEBUG") ?: "false" == "true") {
+            println(packet)
+        }
         when (packet.PacketID) {
             PacketID.SELF_INIT.id -> {
                 val content = (packet.Content as LinkedTreeMap<*, *>)
@@ -96,6 +99,21 @@ class Main : ApplicationAdapter() {
                 }
                 pushEvent(Event(EventType.PLAYCARDRESULT, stringResult))
             }
+            PacketID.MONSTER_SPAWN.id -> {
+                val content = (packet.Content as LinkedTreeMap<*, *>)
+                val eventData = hashMapOf(
+                    "name" to (content.get("monster") as LinkedTreeMap<*, *>).get("Name").toString(),
+                    "abilityName" to ((content.get("monster") as LinkedTreeMap<*, *>).get("Ability") as LinkedTreeMap<*, *>).get("Name").toString(),
+                    "cost" to (content.get("monster") as LinkedTreeMap<*, *>).get("EnergyCost").toString(),
+                    "attack" to (content.get("monster") as LinkedTreeMap<*, *>).get("Attack").toString(),
+                    "health" to (content.get("monster") as LinkedTreeMap<*, *>).get("Health").toString(),
+                    "maxHealth" to (content.get("monster") as LinkedTreeMap<*, *>).get("MaxHealth").toString(),
+                    "abilityDescription" to ((content.get("monster") as LinkedTreeMap<*, *>).get("Ability") as LinkedTreeMap<*, *>).get("Description").toString(),
+                    "position" to content.get("position").toString(),
+                    "ownership" to content.get("ownership").toString()
+                )
+                pushEvent(Event(EventType.SPAWNMONSTER, eventData))
+            }
             PacketID.OPPONENT_PLAY_CARD.id -> {
                 var content = (packet.Content as LinkedTreeMap<*, *>)
                 val eventData = hashMapOf(
@@ -115,7 +133,8 @@ class Main : ApplicationAdapter() {
                 val eventData = hashMapOf(
                     "ownership" to (!(content.get("ownership") as Boolean)).toString(),
                     "position" to (content.get("position") as Double).toInt().toString(),
-                    "health" to ((content.get("monster") as LinkedTreeMap<*, *>).get("Health") as Double).toInt().toString()
+                    "health" to ((content.get("monster") as LinkedTreeMap<*, *>).get("Health") as Double).toInt().toString(),
+                    "died" to (content.get("died") as Boolean).toString()
                 )
                 pushEvent(Event(EventType.MONSTERDAMAGE, eventData))
             }
