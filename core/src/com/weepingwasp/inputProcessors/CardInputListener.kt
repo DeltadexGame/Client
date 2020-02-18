@@ -37,12 +37,12 @@ class CardInputListener : InputListener() {
             tempPos.set(x, y)
             tempPos.set(event.listenerActor.localToStageCoordinates(tempPos))
             var placed = false
-            if (tempPos.y in stage.height / 4..stage.height / 2) {
+            if (((event.listenerActor) as Card).player.myTurn && tempPos.y in stage.height / 4..stage.height / 2) {
                 placed = true
                 when (tempPos.x) {
                     in stage.width / 8..stage.width / 8 * 3 -> {
                         val card = event.listenerActor as Card
-                        val position = card.player!!.cards.indexOf(card)
+                        val position = card.player.cards.indexOf(card)
                         val placeEvent = Event(EventType.PLAYCARD, hashMapOf(
                             "place" to "0",
                             "from" to "$position"
@@ -51,7 +51,7 @@ class CardInputListener : InputListener() {
                     }
                     in stage.width / 8 * 3..stage.width / 8 * 5 -> {
                         val card = event.listenerActor as Card
-                        val position = card.player!!.cards.indexOf(card)
+                        val position = card.player.cards.indexOf(card)
                         val placeEvent = Event(EventType.PLAYCARD, hashMapOf(
                             "place" to "1",
                             "from" to "$position"
@@ -60,7 +60,7 @@ class CardInputListener : InputListener() {
                     }
                     in stage.width / 8 * 5..stage.width / 8 * 7 -> {
                         val card = event.listenerActor as Card
-                        val position = card.player!!.cards.indexOf(card)
+                        val position = card.player.cards.indexOf(card)
                         val placeEvent = Event(EventType.PLAYCARD, hashMapOf(
                             "place" to "2",
                             "from" to "$position"

@@ -16,8 +16,9 @@ import com.deltadex.getFont
 import com.deltadex.getBigFont
 import com.deltadex.graphics.HealthLabel
 import com.deltadex.graphics.AttackLabel
+import com.deltadex.graphics.CostLabel
 
-class Card() : Group() {
+class Card(val player: Player) : Group() {
 
     private var graphicsInitialised = false
 
@@ -25,14 +26,15 @@ class Card() : Group() {
 
     var picture: Image? = null
 
-    var player: Player? = null
+    // var player: Player? = null
 
     var pictureLocation = ""
     set(value) {
+        if(field != "")
+            player.storage.assetManager.unload(field)
         field = value
-        if(picture != null) {
-            picture = Image(Texture(value))
-        }
+        player.storage.assetManager.load(value, Texture::class.java)
+        graphicsInitialised = false
     }
     get() = field
 
@@ -74,10 +76,10 @@ class Card() : Group() {
     var cost: Int = 0
     set(value) {
         field = value
-        costLabel?.setText(value)
+        costLabel?.value = value
     }
     get() = field
-    private var costLabel: Label? = null
+    private var costLabel: CostLabel? = null
 
     var maxHealth: Int = 0
 
@@ -88,8 +90,7 @@ class Card() : Group() {
     }
 
     fun clone(): Card {
-        val card = Card()
-        card.player = this.player
+        val card = Card(this.player)
         card.text = this.text
         card.cardName = this.cardName
         card.health = this.health
@@ -101,44 +102,51 @@ class Card() : Group() {
     }
 
     fun initGraphics() {
-        if(this.player != null) {
-            if(this.player!!.self) {
-                this.addListener(inputListener)
-                image = Image(Texture("card.png"))
-                label = Label(text, Label.LabelStyle(getFont(), Color.WHITE))
-                nameLabel = Label(cardName, Label.LabelStyle(getFont(), Color.WHITE))
-                attackLabel = AttackLabel(attack)
-                healthLabel = HealthLabel(health)
-                costLabel = Label(cost.toString(), Label.LabelStyle(getBigFont(), Color.WHITE))
-                if(pictureLocation != "")
-                    picture = Image(Texture(pictureLocation))
-                else
-                    picture = Image()
-                label?.setBounds(42f, 122f, 279f, 117f)
-                label?.setAlignment(Align.topLeft, Align.left)
-                label?.setWrap(true)
-                nameLabel?.setBounds(42f, 505f, 279f, 25f)
-                nameLabel?.setAlignment(Align.bottomLeft, Align.center)
-                attackLabel?.setBounds(36f, 36f, 64f, 64f)
-                healthLabel?.setBounds(260f, 36f, 64f, 64f)
-                costLabel?.setBounds(261f, 441f, 63f, 63f)
-                costLabel?.setAlignment(Align.center, Align.center)
-                picture?.setBounds(38f, 262f, 284f, 240f)
-                addActor(image)
-                addActor(label)
-                addActor(healthLabel)
-                addActor(attackLabel)
-                addActor(picture)
-                addActor(costLabel)
-                addActor(nameLabel)
-            }
-            else {
-                image = Image(Texture("cardBack.png"))
-                this.moveBy(stage.width - image!!.width * this.scaleX, stage.height - image!!.height * this.scaleY)
-                addActor(image)
-            }
-            graphicsInitialised = true
+        if(this.player.self) {
+            this.addListener(inputListener)
+            if(player.storage.assetManager.isLoaded("card.png") == true)
+                image = Image(player.storage.assetManager.get("card.png", Texture::class.java))
+            else
+                return
+            label = Label(text, Label.LabelStyle(getFont(), Color.WHITE))
+            nameLabel = Label(cardName, Label.LabelStyle(getFont(), Color.WHITE))
+            attackLabel = AttackLabel(attack)
+            healthLabel = HealthLabel(health)
+            costLabel = CostLabel(cost)
+            if(pictureLocation != "") {
+                if(player.storage.assetManager.isLoaded(pictureLocation) == true)
+                    picture = Image(player.storage.assetManager.get(pictureLocation, Texture::class.java))
+                else{
+                    return
+                }
+            } else
+                picture = Image()
+            label?.setBounds(42f, 122f, 279f, 117f)
+            label?.setAlignment(Align.topLeft, Align.left)
+            label?.setWrap(true)
+            nameLabel?.setBounds(42f, 505f, 279f, 25f)
+            nameLabel?.setAlignment(Align.bottomLeft, Align.center)
+            attackLabel?.setBounds(36f, 36f, 64f, 64f)
+            healthLabel?.setBounds(260f, 36f, 64f, 64f)
+            costLabel?.setBounds(261f, 441f, 63f, 63f)
+            picture?.setBounds(38f, 262f, 284f, 240f)
+            addActor(image)
+            addActor(label)
+            addActor(healthLabel)
+            addActor(attackLabel)
+            addActor(picture)
+            addActor(costLabel)
+            addActor(nameLabel)
         }
+        else {
+            if(player.storage.assetManager.isLoaded("cardBack.png") == true)
+                image = Image(player.storage.assetManager.get("cardBack.png", Texture::class.java))
+            else
+                return
+            this.moveBy(stage.width - image!!.width * this.scaleX, stage.height - image!!.height * this.scaleY)
+            addActor(image)
+        }
+        graphicsInitialised = true
     }
 
     override

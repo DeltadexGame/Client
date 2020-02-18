@@ -43,15 +43,17 @@ class Monster(val card: Card, val position: Int, val own: Boolean) : Group() {
     fun initGraphics() {
         attackLabel = AttackLabel(attack)
         healthLabel = HealthLabel(health)
-        picture = Image(Texture(pictureLocation))
+        if(card.player.storage.assetManager.isLoaded(pictureLocation) == true)
+            picture = Image(card.player.storage.assetManager.get(pictureLocation, Texture::class.java))
+        else{
+            return
+        }
         attackLabel!!.setBounds(picture!!.width / 2 - 64f, 0f, 64f, 64f)
         healthLabel!!.setBounds(picture!!.width / 2, 0f, 64f, 64f)
         addActor(picture)
         addActor(attackLabel)
         addActor(healthLabel)
         graphicsInitialised = true
-        var tempVector = Vector2(picture!!.width, picture!!.height)
-        tempVector = this.localToStageCoordinates(tempVector)
         val forwardMove = if (own) -1 else 1
         setOrigin(picture!!.width / 2, picture!!.height / 2)
         setScale(0.5f, 0.5f)

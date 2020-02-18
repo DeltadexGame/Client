@@ -16,10 +16,14 @@ fun pushEvent(event: Event) {
 enum class EventType() {
     PLAYCARD,
     ENDTURN,
+    STARTTURN,
+    DRAWCARD,
     PLAYCARDRESULT,
     ENEMYPLAYCARD,
     MONSTERDAMAGE,
     SPAWNMONSTER,
+    SELFSTARTINGINFO,
+    ENEMYSTARTINGINFO,
 }
 
 class Event(val type: EventType, val data: Map<String, String>)

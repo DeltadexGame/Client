@@ -60,14 +60,28 @@ class Main : ApplicationAdapter() {
         when (packet.PacketID) {
             PacketID.SELF_INIT.id -> {
                 val content = (packet.Content as LinkedTreeMap<*, *>)
+                val eventData = hashMapOf(
+                    "name" to content.get("username").toString(),
+                    "energy" to content.get("energy").toString(),
+                    "health" to content.get("health").toString(),
+                    "starting" to content.get("starting").toString()
+                )
+                pushEvent(Event(EventType.SELFSTARTINGINFO, eventData))
             }
             PacketID.OPPONENT_INIT.id -> {
                 val content = (packet.Content as LinkedTreeMap<*, *>)
+                val eventData = hashMapOf(
+                    "name" to content.get("username").toString(),
+                    "energy" to content.get("energy").toString(),
+                    "health" to content.get("health").toString(),
+                    "starting" to content.get("starting").toString()
+                )
+                pushEvent(Event(EventType.ENEMYSTARTINGINFO, eventData))
             }
             PacketID.OPPONENT_STARTING_HAND.id -> {
                 val cards = ((packet.Content as LinkedTreeMap<*, *>).get("hand") as Double).toInt()
                 for (i in 0 until cards) {
-                    storage.addCard(Card(), true)
+                    storage.addCard(Card(storage.opponent), true)
                 }
             }
             PacketID.STARTING_HAND.id -> {
@@ -81,7 +95,7 @@ class Main : ApplicationAdapter() {
                     val cardAttack = (cardData.get("Attack") as Double)
                     val cardHealth = (cardData.get("Health") as Double)
 
-                    val card = Card()
+                    val card = Card(storage.player)
                     card.text = abilityName + ": " + abilityDesc
                     card.cardName = cardName
                     card.cost = cardCost.toInt()
@@ -140,6 +154,27 @@ class Main : ApplicationAdapter() {
             }
             PacketID.END_TURN_PLAYER_ATTACKED.id -> {
             }
+            PacketID.END_TURN.id -> {
+                pushEvent(Event(EventType.ENDTURN, hashMapOf("self" to (packet.Content as LinkedTreeMap<*, *>).get("self").toString())))
+            }
+            PacketID.START_TURN.id -> {
+                pushEvent(Event(EventType.STARTTURN, hashMapOf("self" to (packet.Content as LinkedTreeMap<*, *>).get("self").toString())))
+            }
+            PacketID.YOU_DRAW_CARD.id -> {
+                var content = (packet.Content as LinkedTreeMap<*, *>)
+                pushEvent(Event(EventType.DRAWCARD, hashMapOf(
+                    "self" to "true",
+                    "name" to (content.get("card") as LinkedTreeMap<*, *>).get("Name").toString(),
+                    "abilityName" to ((content.get("card") as LinkedTreeMap<*, *>).get("Ability") as LinkedTreeMap<*, *>).get("Name").toString(),
+                    "cost" to (content.get("card") as LinkedTreeMap<*, *>).get("EnergyCost").toString(),
+                    "attack" to (content.get("card") as LinkedTreeMap<*, *>).get("Attack").toString(),
+                    "abilityDescription" to ((content.get("card") as LinkedTreeMap<*, *>).get("Ability") as LinkedTreeMap<*, *>).get("Description").toString(),
+                    "health" to (content.get("card") as LinkedTreeMap<*, *>).get("Health").toString()
+                )))
+            }
+            PacketID.ENEMY_DRAW_CARD.id -> {
+                pushEvent(Event(EventType.DRAWCARD, hashMapOf("self" to "false")))
+            }
             else -> {
                 println(packet)
             }
@@ -155,8 +190,14 @@ class Main : ApplicationAdapter() {
         boardSprite!!.setSize(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
         val inputMultiplexer = InputMultiplexer()
 
-        val endTurn = Image(Texture("endturn.png"))
-        endTurn.setBounds(Gdx.graphics.width.toFloat() - endTurn.width, Gdx.graphics.height.toFloat() / 2 - endTurn.height / 2, endTurn.width, endTurn.height)
+        storage.stage = Stage()
+        storage.stage!!.addActor(boardSprite)
+        storage.assetManager.load("endturn.png", Texture::class.java)
+        storage.assetManager.load("card.png", Texture::class.java)
+        storage.assetManager.load("cardBack.png", Texture::class.java)
+        storage.assetManager.finishLoading()
+        val endTurn = Image(storage.assetManager.get("endturn.png", Texture::class.java))
+        endTurn.setBounds(storage.stage!!.width.toFloat() - endTurn.width, storage.stage!!.height.toFloat() / 2 - endTurn.height / 2, endTurn.width, endTurn.height)
         endTurn.addListener(object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 storage.networkManager?.sendPacket(Packet(PacketID.END_TURN.id, hashMapOf<String, String>()))
@@ -164,9 +205,9 @@ class Main : ApplicationAdapter() {
             }
         })
 
-        storage.stage = Stage()
-        storage.stage!!.addActor(boardSprite)
         storage.stage!!.addActor(endTurn)
+        storage.stage!!.addActor(storage.player)
+        storage.stage!!.addActor(storage.opponent)
         // var card = Card()
         // card.pictureLocation = "Zombie.png"
         // card.cardName = "Zombie"
@@ -200,10 +241,12 @@ class Main : ApplicationAdapter() {
     override
     fun render() {
         graphics!!.render()
+        storage.assetManager.update()
     }
 
     override
     fun dispose() {
         boardImg?.dispose()
+        storage.assetManager.dispose()
     }
 }
