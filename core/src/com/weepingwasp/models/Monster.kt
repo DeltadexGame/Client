@@ -41,8 +41,8 @@ class Monster(val card: Card, val position: Int, val own: Boolean) : Group() {
     }
 
     fun initGraphics() {
-        attackLabel = AttackLabel(attack)
-        healthLabel = HealthLabel(health)
+        attackLabel = AttackLabel(attack, card.player.storage.assetManager)
+        healthLabel = HealthLabel(health, card.player.storage.assetManager)
         if(card.player.storage.assetManager.isLoaded(pictureLocation) == true)
             picture = Image(card.player.storage.assetManager.get(pictureLocation, Texture::class.java))
         else{
@@ -57,6 +57,8 @@ class Monster(val card: Card, val position: Int, val own: Boolean) : Group() {
         val forwardMove = if (own) -1 else 1
         setOrigin(picture!!.width / 2, picture!!.height / 2)
         setScale(0.5f, 0.5f)
-        moveBy((stage.width / 4 * (position + 1) - picture!!.width / 2).toFloat(), (stage.height / 2 + stage.height / 10 * forwardMove - picture!!.height / 2).toFloat())
+        if(stage != null)
+            moveBy((stage.width / 4 * (position + 1) - picture!!.width / 2).toFloat(), (stage.height / 2 + stage.height / 10 * forwardMove - picture!!.height / 2).toFloat())
+        graphicsInitialised = true
     }
 }

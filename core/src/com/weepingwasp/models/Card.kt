@@ -17,6 +17,8 @@ import com.deltadex.getBigFont
 import com.deltadex.graphics.HealthLabel
 import com.deltadex.graphics.AttackLabel
 import com.deltadex.graphics.CostLabel
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Touchable
 
 class Card(val player: Player) : Group() {
 
@@ -102,17 +104,13 @@ class Card(val player: Player) : Group() {
     }
 
     fun initGraphics() {
+        println("initCardGraphics")
+        println(this.scaleX)
         if(this.player.self) {
-            this.addListener(inputListener)
             if(player.storage.assetManager.isLoaded("card.png") == true)
                 image = Image(player.storage.assetManager.get("card.png", Texture::class.java))
             else
                 return
-            label = Label(text, Label.LabelStyle(getFont(), Color.WHITE))
-            nameLabel = Label(cardName, Label.LabelStyle(getFont(), Color.WHITE))
-            attackLabel = AttackLabel(attack)
-            healthLabel = HealthLabel(health)
-            costLabel = CostLabel(cost)
             if(pictureLocation != "") {
                 if(player.storage.assetManager.isLoaded(pictureLocation) == true)
                     picture = Image(player.storage.assetManager.get(pictureLocation, Texture::class.java))
@@ -121,6 +119,12 @@ class Card(val player: Player) : Group() {
                 }
             } else
                 picture = Image()
+            this.addListener(inputListener)
+            label = Label(text, Label.LabelStyle(getFont(), Color.WHITE))
+            nameLabel = Label(cardName, Label.LabelStyle(getFont(), Color.WHITE))
+            attackLabel = AttackLabel(attack, player.storage.assetManager)
+            healthLabel = HealthLabel(health, player.storage.assetManager)
+            costLabel = CostLabel(cost, player.storage.assetManager)
             label?.setBounds(42f, 122f, 279f, 117f)
             label?.setAlignment(Align.topLeft, Align.left)
             label?.setWrap(true)
@@ -155,5 +159,16 @@ class Card(val player: Player) : Group() {
             initGraphics()
         }
         super.draw(batch, parentAlpha)
+    }
+
+    override
+    fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
+        if (touchable && this.getTouchable() == Touchable.disabled) {
+            return null
+        } else if (!this.isVisible()) {
+            return null
+        } else {
+            return if(image != null && x <= image!!.width && y <= image!!.height && x >= 0 && y>= 0) this else null
+        }
     }
 }

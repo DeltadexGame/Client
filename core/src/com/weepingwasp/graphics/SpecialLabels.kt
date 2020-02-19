@@ -7,8 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
 import com.deltadex.getBigFont
+import com.badlogic.gdx.assets.AssetManager
 
-open class SpecialLabel(val boxTexture: String, value: Int) : Group() {
+open class SpecialLabel(val boxTexture: String, value: Int, assetManager: AssetManager) : Group() {
 
     var value: Int = value
     get() = field
@@ -16,7 +17,7 @@ open class SpecialLabel(val boxTexture: String, value: Int) : Group() {
         field = value
         label.setText(value.toString())
     }
-    val picture = Image(Texture(boxTexture))
+    val picture = Image(assetManager.get(boxTexture, Texture::class.java))
     val label = Label(value.toString(), Label.LabelStyle(getBigFont(), Color.WHITE))
 
     init {
@@ -27,8 +28,8 @@ open class SpecialLabel(val boxTexture: String, value: Int) : Group() {
     }
 }
 
-class HealthLabel(value: Int) : SpecialLabel("healthBox.png", value)
+class HealthLabel(value: Int, assetManager: AssetManager) : SpecialLabel("healthBox.png", value, assetManager)
 
-class AttackLabel(value: Int) : SpecialLabel("attackBox.png", value)
+class AttackLabel(value: Int, assetManager: AssetManager) : SpecialLabel("attackBox.png", value, assetManager)
 
-class CostLabel(value: Int) : SpecialLabel("costBox.png", value)
+class CostLabel(value: Int, assetManager: AssetManager) : SpecialLabel("costBox.png", value, assetManager)
