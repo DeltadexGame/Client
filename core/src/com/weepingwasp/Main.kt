@@ -1,6 +1,6 @@
 package com.deltadex
 
-import com.badlogic.gdx.ApplicationAdapter
+import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.Color
@@ -18,10 +18,9 @@ import com.deltadex.network_manager.NetworkManager
 import com.deltadex.network_manager.Packet
 import com.deltadex.network_manager.PacketID
 import com.google.gson.internal.*
+import com.badlogic.gdx.Game
 
-class Main : ApplicationAdapter() {
-    val connectToServer = true
-
+class Main(val name: String, val token: String, val game: Game) : ScreenAdapter() {
     var boardImg: Texture? = null
     var boardSprite: Image? = null
 
@@ -38,17 +37,17 @@ class Main : ApplicationAdapter() {
         pixmap.fill()
 
         pixmap.setColor(Color.GREEN)
-        pixmap.fillCircle(width / 4 * 1, height / 2 + height / 10, height / 16)
-        pixmap.fillCircle(width / 4 * 2, height / 2 + height / 10, height / 16)
-        pixmap.fillCircle(width / 4 * 3, height / 2 + height / 10, height / 16)
+        pixmap.fillRectangle(width / 4 * 1 - height / 16, height / 2 + height / 10 - height / 16, height / 8, height / 8)
+        pixmap.fillRectangle(width / 4 * 2 - height / 16, height / 2 + height / 10 - height / 16, height / 8, height / 8)
+        pixmap.fillRectangle(width / 4 * 3 - height / 16, height / 2 + height / 10 - height / 16, height / 8, height / 8)
 
         pixmap.setColor(Color.BLACK)
         pixmap.drawLine(0, height / 2, width, height / 2)
 
         pixmap.setColor(Color.RED)
-        pixmap.fillCircle(width / 4 * 1, height / 2 - height / 10, height / 16)
-        pixmap.fillCircle(width / 4 * 2, height / 2 - height / 10, height / 16)
-        pixmap.fillCircle(width / 4 * 3, height / 2 - height / 10, height / 16)
+        pixmap.fillRectangle(width / 4 * 1 - height / 16, height / 2 - height / 10 - height / 16, height / 8, height / 8)
+        pixmap.fillRectangle(width / 4 * 2 - height / 16, height / 2 - height / 10 - height / 16, height / 8, height / 8)
+        pixmap.fillRectangle(width / 4 * 3 - height / 16, height / 2 - height / 10 - height / 16, height / 8, height / 8)
 
         return pixmap
     }
@@ -141,6 +140,8 @@ class Main : ApplicationAdapter() {
                 pushEvent(Event(EventType.ENEMYPLAYCARD, eventData))
             }
             PacketID.CHANGE_ENERGY.id -> {
+                val eventData = hashMapOf("self" to "true", "energy" to (packet.Content as LinkedTreeMap<*, *>).get("energy").toString())
+                pushEvent(Event(EventType.CHANGEENERGY, eventData))
             }
             PacketID.END_TURN_MONSTER_ATTACKED.id -> {
                 val content = packet.Content as LinkedTreeMap<*, *>
@@ -153,6 +154,14 @@ class Main : ApplicationAdapter() {
                 pushEvent(Event(EventType.MONSTERDAMAGE, eventData))
             }
             PacketID.END_TURN_PLAYER_ATTACKED.id -> {
+                val content = packet.Content as LinkedTreeMap<*, *>
+                val eventData = hashMapOf(
+                    "ownership" to (!(content.get("ownership") as Boolean)).toString(),
+                    "health" to ((content.get("health") as Double).toInt().toString()),
+                    "died" to (content.get("died") as Boolean).toString(),
+                    "position" to (content.get("position") as Double).toInt().toString()
+                )
+                pushEvent(Event(EventType.PLAYERDAMAGE, eventData))
             }
             PacketID.END_TURN.id -> {
                 pushEvent(Event(EventType.ENDTURN, hashMapOf("self" to (packet.Content as LinkedTreeMap<*, *>).get("self").toString())))
@@ -182,7 +191,7 @@ class Main : ApplicationAdapter() {
     }
 
     override
-    fun create() {
+    fun show() {
         val boardPixmap = createBoardPixmap()
         boardImg = Texture(boardPixmap)
         boardPixmap.dispose()
@@ -198,6 +207,8 @@ class Main : ApplicationAdapter() {
         storage.assetManager.load("healthBox.png", Texture::class.java)
         storage.assetManager.load("attackBox.png", Texture::class.java)
         storage.assetManager.load("costBox.png", Texture::class.java)
+        storage.assetManager.load("turnArrowOn.png", Texture::class.java)
+        storage.assetManager.load("turnArrowOff.png", Texture::class.java)
         storage.assetManager.finishLoading()
         val endTurn = Image(storage.assetManager.get("endturn.png", Texture::class.java))
         endTurn.setBounds(storage.stage!!.width.toFloat() - endTurn.width, storage.stage!!.height.toFloat() / 2 - endTurn.height / 2, endTurn.width, endTurn.height)
@@ -228,10 +239,8 @@ class Main : ApplicationAdapter() {
         inputMultiplexer.addProcessor(storage.stage!!)
         Gdx.input.inputProcessor = inputMultiplexer
 
-        if (connectToServer) {
-            storage.networkManager = NetworkManager("localhost", 8080, ::packetReceived)
-            storage.networkManager!!.sendPacket(Packet(PacketID.AUTH_INFO.id, hashMapOf("username" to "oisin", "token" to "abcdefg")))
-        }
+        storage.networkManager = NetworkManager("localhost", 8080, ::packetReceived)
+        storage.networkManager!!.sendPacket(Packet(PacketID.AUTH_INFO.id, hashMapOf("username" to name, "token" to token)))
 
         graphics = Graphics(storage)
     }
@@ -242,7 +251,7 @@ class Main : ApplicationAdapter() {
     }
 
     override
-    fun render() {
+    fun render(delta: Float) {
         graphics!!.render()
         storage.assetManager.update()
     }

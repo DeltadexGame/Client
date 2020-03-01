@@ -10,20 +10,27 @@ const val height = 1080
 const val cardWidth = height / 6
 const val cardHeight = height / 4
 
+private var font: BitmapFont? = null
+private var bigFont: BitmapFont? = null
+
 fun getFont(): BitmapFont {
-    val generator = FreeTypeFontGenerator(Gdx.files.internal("fonts/Arial.ttf"))
-    val parameter = FreeTypeFontParameter()
-    parameter.size = 20
-    val font = generator.generateFont(parameter)
-    generator.dispose()
-    return font
+    if(font == null) {
+        val generator = FreeTypeFontGenerator(Gdx.files.internal("fonts/Arial.ttf"))
+        val parameter = FreeTypeFontParameter()
+        parameter.size = 20
+        font = generator.generateFont(parameter)
+        generator.dispose()
+    }
+    return font!!
 }
 
 fun getBigFont(): BitmapFont {
-    val generator = FreeTypeFontGenerator(Gdx.files.internal("fonts/Arial.ttf"))
-    val parameter = FreeTypeFontParameter()
-    parameter.size = 40
-    val font = generator.generateFont(parameter)
-    generator.dispose()
-    return font
+    if(bigFont == null) {
+        val generator = FreeTypeFontGenerator(Gdx.files.internal("fonts/Arial.ttf"))
+        val parameter = FreeTypeFontParameter()
+        parameter.size = 40
+        bigFont = generator.generateFont(parameter)
+        generator.dispose()
+    }
+    return bigFont!!
 }

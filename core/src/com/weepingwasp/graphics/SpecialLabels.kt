@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
 import com.deltadex.getBigFont
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.graphics.g2d.Batch
 
 open class SpecialLabel(val boxTexture: String, value: Int, assetManager: AssetManager) : Group() {
 
@@ -32,4 +33,11 @@ class HealthLabel(value: Int, assetManager: AssetManager) : SpecialLabel("health
 
 class AttackLabel(value: Int, assetManager: AssetManager) : SpecialLabel("attackBox.png", value, assetManager)
 
-class CostLabel(value: Int, assetManager: AssetManager) : SpecialLabel("costBox.png", value, assetManager)
+class CostLabel(value: Int, assetManager: AssetManager) : SpecialLabel("costBox.png", value, assetManager) {
+    override fun draw(batch: Batch, parentAlpha: Float) {
+        if(value == 0)
+            return
+        else
+            super.draw(batch, parentAlpha)
+    }
+}

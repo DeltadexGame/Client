@@ -28,7 +28,7 @@ class Card(val player: Player) : Group() {
 
     var picture: Image? = null
 
-    // var player: Player? = null
+    var isKnown = false
 
     var pictureLocation = ""
     set(value) {
@@ -93,6 +93,7 @@ class Card(val player: Player) : Group() {
 
     fun clone(): Card {
         val card = Card(this.player)
+        card.isKnown = this.isKnown
         card.text = this.text
         card.cardName = this.cardName
         card.health = this.health
@@ -104,9 +105,7 @@ class Card(val player: Player) : Group() {
     }
 
     fun initGraphics() {
-        println("initCardGraphics")
-        println(this.scaleX)
-        if(this.player.self) {
+        if(this.player.self || this.isKnown) {
             if(player.storage.assetManager.isLoaded("card.png") == true)
                 image = Image(player.storage.assetManager.get("card.png", Texture::class.java))
             else

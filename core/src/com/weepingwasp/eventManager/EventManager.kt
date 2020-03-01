@@ -24,6 +24,8 @@ enum class EventType() {
     SPAWNMONSTER,
     SELFSTARTINGINFO,
     ENEMYSTARTINGINFO,
+    CHANGEENERGY,
+    PLAYERDAMAGE,
 }
 
 class Event(val type: EventType, val data: Map<String, String>)

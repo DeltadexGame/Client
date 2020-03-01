@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.deltadex.graphics.AttackLabel
 import com.deltadex.graphics.HealthLabel
+import com.deltadex.input_processors.MonsterInputListener
 
 class Monster(val card: Card, val position: Int, val own: Boolean) : Group() {
     var attack = card.attack
@@ -32,6 +33,8 @@ class Monster(val card: Card, val position: Int, val own: Boolean) : Group() {
 
     var graphicsInitialised = false
 
+    val inputListener = MonsterInputListener()
+
     override
     fun draw(batch: Batch, parentAlpha: Float) {
         if (!graphicsInitialised) {
@@ -43,9 +46,10 @@ class Monster(val card: Card, val position: Int, val own: Boolean) : Group() {
     fun initGraphics() {
         attackLabel = AttackLabel(attack, card.player.storage.assetManager)
         healthLabel = HealthLabel(health, card.player.storage.assetManager)
-        if(card.player.storage.assetManager.isLoaded(pictureLocation) == true)
+        if(card.player.storage.assetManager.isLoaded(pictureLocation) == true) {
             picture = Image(card.player.storage.assetManager.get(pictureLocation, Texture::class.java))
-        else{
+            picture!!.setSize(256f, 256f)
+        } else{
             return
         }
         attackLabel!!.setBounds(picture!!.width / 2 - 64f, 0f, 64f, 64f)
@@ -59,6 +63,7 @@ class Monster(val card: Card, val position: Int, val own: Boolean) : Group() {
         setScale(0.5f, 0.5f)
         if(stage != null)
             moveBy((stage.width / 4 * (position + 1) - picture!!.width / 2).toFloat(), (stage.height / 2 + stage.height / 10 * forwardMove - picture!!.height / 2).toFloat())
+        addListener(inputListener)
         graphicsInitialised = true
     }
 }
