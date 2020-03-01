@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.deltadex.event_manager.*
 import com.deltadex.models.Card
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 
 class CardInputListener : InputListener() {
     val touchPos = Vector2()
@@ -15,11 +16,12 @@ class CardInputListener : InputListener() {
     var originalZIndex = 0
     var enlargedCard: Card? = null
     var draggingCard = false
+    var on = false
     override
     fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
         if (button == Input.Buttons.LEFT) {
-            val stage = event.listenerActor.stage
-            stage.actors.removeValue(enlargedCard, false)
+            enlargedCard?.addAction(Actions.removeActor())
+            enlargedCard = null
             touchPos.set(x, y)
             touchPos.set(event.listenerActor.localToStageCoordinates(touchPos))
             cardOriginalPos.set(event.listenerActor.getX(), event.listenerActor.getY())
@@ -37,12 +39,12 @@ class CardInputListener : InputListener() {
             tempPos.set(x, y)
             tempPos.set(event.listenerActor.localToStageCoordinates(tempPos))
             var placed = false
-            if (tempPos.y in stage.height / 4..stage.height / 2) {
+            if (((event.listenerActor) as Card).player.myTurn && tempPos.y in stage.height / 4..stage.height / 2) {
                 placed = true
                 when (tempPos.x) {
                     in stage.width / 8..stage.width / 8 * 3 -> {
                         val card = event.listenerActor as Card
-                        val position = card.player!!.cards.indexOf(card)
+                        val position = card.player.cards.indexOf(card)
                         val placeEvent = Event(EventType.PLAYCARD, hashMapOf(
                             "place" to "0",
                             "from" to "$position"
@@ -51,7 +53,7 @@ class CardInputListener : InputListener() {
                     }
                     in stage.width / 8 * 3..stage.width / 8 * 5 -> {
                         val card = event.listenerActor as Card
-                        val position = card.player!!.cards.indexOf(card)
+                        val position = card.player.cards.indexOf(card)
                         val placeEvent = Event(EventType.PLAYCARD, hashMapOf(
                             "place" to "1",
                             "from" to "$position"
@@ -60,7 +62,7 @@ class CardInputListener : InputListener() {
                     }
                     in stage.width / 8 * 5..stage.width / 8 * 7 -> {
                         val card = event.listenerActor as Card
-                        val position = card.player!!.cards.indexOf(card)
+                        val position = card.player.cards.indexOf(card)
                         val placeEvent = Event(EventType.PLAYCARD, hashMapOf(
                             "place" to "2",
                             "from" to "$position"
@@ -84,7 +86,8 @@ class CardInputListener : InputListener() {
 
     override
     fun touchDragged(event: InputEvent, x: Float, y: Float, pointer: Int) {
-        enlargedCard?.remove()
+        enlargedCard?.addAction(Actions.removeActor())
+        enlargedCard = null
         tempPos.set(x, y)
         tempPos.set(event.listenerActor.localToStageCoordinates(tempPos))
         event.listenerActor.setPosition(cardOriginalPos.x + tempPos.x - touchPos.x, cardOriginalPos.y + tempPos.y - touchPos.y)
@@ -92,18 +95,26 @@ class CardInputListener : InputListener() {
 
     override
     fun enter(event: InputEvent, x: Float, y: Float, pointer: Int, fromActor: Actor?) {
-        enlargedCard = (event.listenerActor as Card).clone()
-        enlargedCard!!.initGraphics()
-        enlargedCard!!.scaleBy(1f)
-        val stage = event.listenerActor.stage
-        if (stage != null) {
-            enlargedCard!!.setPosition(stage.width / 2 - enlargedCard!!.image!!.width * enlargedCard!!.scaleX / 2, stage.height / 2 - enlargedCard!!.image!!.height * enlargedCard!!.scaleY / 2)
-            stage.addActor(enlargedCard)
+        if(!on && enlargedCard == null) {
+            
+            val card = (event.listenerActor as Card)
+            val newEnlargedCard = card.clone()
+            newEnlargedCard.removeListener(newEnlargedCard.inputListener)
+            newEnlargedCard.scaleBy(1f)
+            val stage = event.listenerActor.stage
+            if (stage != null) {
+                newEnlargedCard.setPosition(stage.width / 2 - card.image!!.width * newEnlargedCard.scaleX / 2, stage.height / 2 - card.image!!.height * newEnlargedCard.scaleY / 2)
+                stage.addActor(newEnlargedCard)
+                enlargedCard = newEnlargedCard
+            }
+            on = true
         }
     }
-
+    
     override
     fun exit(event: InputEvent, x: Float, y: Float, pointer: Int, toActor: Actor?) {
-        enlargedCard?.remove()
+        enlargedCard?.addAction(Actions.removeActor())
+        enlargedCard = null
+        on = false
     }
 }
