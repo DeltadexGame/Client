@@ -20,7 +20,7 @@ import com.deltadex.network_manager.PacketID
 import com.google.gson.internal.*
 import com.badlogic.gdx.Game
 
-class Main(val name: String, val token: String, val game: Game) : ScreenAdapter() {
+class Main(val name: String, val token: String, val game: Game, val ip: String) : ScreenAdapter() {
     var boardImg: Texture? = null
     var boardSprite: Image? = null
 
@@ -239,7 +239,11 @@ class Main(val name: String, val token: String, val game: Game) : ScreenAdapter(
         inputMultiplexer.addProcessor(storage.stage!!)
         Gdx.input.inputProcessor = inputMultiplexer
 
-        storage.networkManager = NetworkManager("localhost", 8080, ::packetReceived)
+        val port = ip.split(":").getOrNull(1)?.toInt() ?: 8080
+        var ip = ip.split(":")[0]
+        if(ip == "")
+            ip = "localhost"
+        storage.networkManager = NetworkManager(ip, port, ::packetReceived)
         storage.networkManager!!.sendPacket(Packet(PacketID.AUTH_INFO.id, hashMapOf("username" to name, "token" to token)))
 
         graphics = Graphics(storage)
